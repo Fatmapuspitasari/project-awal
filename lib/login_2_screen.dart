@@ -15,7 +15,7 @@ class _Login2ScreenState extends State<Login2Screen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final String correctUsername = "fatma";
-  final String correctPassword = "123";
+  final String correctPassword = "fatma123";
   bool passwordTampil = true;
 
   void login() {

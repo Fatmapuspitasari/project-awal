@@ -9,7 +9,6 @@ class HomePage extends StatelessWidget {
       elevation: 3,
       child: InkWell(
         onTap: () {
-          // Navigasi ke halaman layanan jika diperlukan
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),

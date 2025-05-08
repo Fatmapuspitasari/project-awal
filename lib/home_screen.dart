@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                onPressed: null, // Ganti dengan fungsi jika ingin aktif
+                onPressed: null, 
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
                   padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
@@ -117,9 +117,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ardefva Shoes Care'),
-        backgroundColor: Colors.blueAccent,
-        // actions dihapus untuk menghilangkan ikon notifikasi dan pengaturan
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
