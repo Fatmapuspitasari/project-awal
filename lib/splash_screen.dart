@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:project_awal/login_2_screen.dart';
-import 'package:project_awal/profile_2_screen.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:project_awal/main.dart'; // Import untuk MainScreen
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -29,13 +28,14 @@ class _SplashScreenState extends State<SplashScreen>
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () {
       final box = GetStorage();
       String? username = box.read('username');
       if (username == null) {
-        Get.off(() => Login2Screen());
+        Get.off(() => const Login2Screen());
       } else {
-        Get.off(() => Profile2Screen());
+        // Arahkan ke MainScreen dengan tab profile aktif
+        Get.off(() => const MainScreen(initialIndex: 1));
       }
     });
   }
@@ -49,23 +49,28 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurpleAccent,
+      backgroundColor: Colors.blue,
       body: FadeTransition(
         opacity: _animation,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FaIcon(FontAwesomeIcons.shoePrints, size: 100, color: Colors.white),
+              Image.asset(
+                'assets/images/logo.png',
+                width: 100,
+                height: 100,
+              ),
               const SizedBox(height: 20),
               const Text(
-                "Welcome Ardefva Shoes Care",
+                "Selamat Datang di Ardefva Shoes Care",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Roboto',
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               const CircularProgressIndicator(

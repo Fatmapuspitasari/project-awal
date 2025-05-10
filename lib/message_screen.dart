@@ -11,7 +11,7 @@ class MessageScreen extends StatelessWidget {
         'title': 'Pesanan Anda Diterima',
         'subtitle': 'Sepatu akan dijemput hari ini pukul 14.00',
         'time': '10:45',
-        'content': 'Terima kasih telah menggunakan Shoes Care. Tim kami akan menjemput sepatu Anda hari ini pukul 14.00 di alamat yang terdaftar.'
+        'content': 'Terima kasih telah menggunakan Ardefva Shoes Care. Tim kami akan menjemput sepatu Anda hari ini pukul 14.00 di alamat yang terdaftar.'
       },
       {
         'title': 'Status: Dalam Proses',
@@ -29,6 +29,8 @@ class MessageScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Pesan'),
+        backgroundColor: Colors.blueAccent,
       ),
       body: ListView.builder(
         itemCount: messages.length,

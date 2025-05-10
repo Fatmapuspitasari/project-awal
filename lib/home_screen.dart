@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -60,10 +61,10 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                onPressed: null, 
+                onPressed: () {}, 
                 style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
-                  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
+                  backgroundColor: MaterialStateProperty.all(Colors.blueAccent),
+                  padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
                 ),
                 child: const Text('Beli Sekarang'),
               ),
@@ -115,35 +116,39 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text('Layanan Kami', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            children: [
-              _buildServiceTile('Cuci Sepatu', Icons.local_laundry_service),
-              _buildServiceTile('Repair', Icons.build),
-              _buildServiceTile('Deep Clean', Icons.cleaning_services),
-              _buildServiceTile('Pickup', Icons.local_shipping),
-            ],
-          ),
-          const SizedBox(height: 30),
-          _buildRecentOrders(),
-          const SizedBox(height: 30),
-          _buildPromotions(),
-          const SizedBox(height: 30),
-          _buildCleanerSale(),
-        ],
-      ),
+    final box = GetStorage();
+    final username = box.read('username') ?? 'Pengguna';
+    
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text(
+          'Selamat datang, $username!', 
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+        ),
+        const SizedBox(height: 20),
+        const Text('Layanan Kami', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          children: [
+            _buildServiceTile('Cuci Sepatu', Icons.local_laundry_service),
+            _buildServiceTile('Repair', Icons.build),
+            _buildServiceTile('Deep Clean', Icons.cleaning_services),
+            _buildServiceTile('Pickup', Icons.local_shipping),
+          ],
+        ),
+        const SizedBox(height: 30),
+        _buildRecentOrders(),
+        const SizedBox(height: 30),
+        _buildPromotions(),
+        const SizedBox(height: 30),
+        _buildCleanerSale(),
+      ],
     );
   }
 }

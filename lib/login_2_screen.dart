@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'profile_2_screen.dart'; 
+import 'package:project_awal/main.dart';
 
 class Login2Screen extends StatefulWidget {
   const Login2Screen({super.key});
@@ -14,22 +14,21 @@ class Login2Screen extends StatefulWidget {
 class _Login2ScreenState extends State<Login2Screen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final String correctUsername = "fatma";
-  final String correctPassword = "fatma123";
   bool passwordTampil = true;
 
   void login() {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    if (username == correctUsername && password == correctPassword) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const Profile2Screen()),
-      );
+    // Menerima login dengan username dan password apapun, selama tidak kosong
+    if (username.isNotEmpty && password.isNotEmpty) {
+      // Simpan data login dan navigasi ke MainScreen
+      final box = GetStorage();
+      box.write("username", username);
+      Get.offAll(() => const MainScreen(initialIndex: 0));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username atau password salah')),
+        const SnackBar(content: Text('Username dan password tidak boleh kosong')),
       );
     }
   }
@@ -103,11 +102,7 @@ class _Login2ScreenState extends State<Login2Screen> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                  final box = GetStorage();
-                  box.write("username", _usernameController.text);
-                  Get.to(() => const Profile2Screen());
-                },
+                onPressed: login,
                 child: const Text("Login"),
               ),
             ],
