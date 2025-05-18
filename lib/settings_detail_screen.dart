@@ -9,7 +9,7 @@ class AkunDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final box = GetStorage();
     final username = box.read('username') ?? 'Pengguna';
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Informasi Akun'),
@@ -30,25 +30,20 @@ class AkunDetailScreen extends StatelessWidget {
             const SizedBox(height: 24),
             const Text(
               'Informasi Pribadi',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             const SizedBox(height: 16),
             _buildInfoTile('Nama Pengguna', username),
             _buildInfoTile('ID Pengguna', username),
             _buildInfoTile('Email', '$username@email.com'),
             _buildInfoTile('Nomor Telepon', '08123456789'),
-            _buildInfoTile('Tanggal Bergabung', '10 Januari 2025'),
-            
             const SizedBox(height: 24),
             const Text(
               'Riwayat Penggunaan',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             const SizedBox(height: 16),
-            _buildInfoTile('Jumlah Pesanan', '12 pesanan'),
-            _buildInfoTile('Pesanan Terakhir', '4 Mei 2025'),
             _buildInfoTile('Total Poin', '250 poin'),
-            
             const SizedBox(height: 32),
             Center(
               child: ElevatedButton(
@@ -124,13 +119,13 @@ class _KeamananScreenState extends State<KeamananScreen> {
   final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-  
+
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
   bool _isBiometricsEnabled = false;
   bool _isNotificationEnabled = true;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,7 +138,7 @@ class _KeamananScreenState extends State<KeamananScreen> {
         children: [
           const Text(
             'Ubah Kata Sandi',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -199,20 +194,18 @@ class _KeamananScreenState extends State<KeamananScreen> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () {
-              // Validasi kata sandi
               if (_currentPasswordController.text.isEmpty ||
                   _newPasswordController.text.isEmpty ||
                   _confirmPasswordController.text.isEmpty) {
                 _showAlert('Semua kolom harus diisi.');
                 return;
               }
-              
+
               if (_newPasswordController.text != _confirmPasswordController.text) {
                 _showAlert('Kata sandi baru dan konfirmasi tidak cocok.');
                 return;
               }
-              
-              // Logika ganti kata sandi
+
               _showAlert('Kata sandi berhasil diubah!', isSuccess: true);
             },
             style: ElevatedButton.styleFrom(
@@ -224,11 +217,10 @@ class _KeamananScreenState extends State<KeamananScreen> {
               style: TextStyle(color: Colors.white),
             ),
           ),
-          
           const SizedBox(height: 32),
           const Text(
             'Pengaturan Keamanan Lainnya',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
           const SizedBox(height: 16),
           SwitchListTile(
@@ -323,27 +315,25 @@ class KebijakanPrivasiScreen extends StatelessWidget {
         children: const [
           Text(
             'Kebijakan Privasi Ardefva Shoes Care',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
           Text(
             'Terakhir diperbarui: 1 Mei 2025',
-            style: TextStyle(fontSize: 14, color: Colors.black54),
+            style: TextStyle(color: Colors.black54),
           ),
           SizedBox(height: 24),
           Text(
             'Ardefva Shoes Care ("kami", "kita", atau "Perusahaan") menghargai privasi pengguna aplikasi mobile kami. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan mengungkapkan informasi pribadi Anda ketika Anda menggunakan aplikasi Ardefva Shoes Care ("Aplikasi").',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 16),
           Text(
             '1. Informasi yang Kami Kumpulkan',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             'Kami mengumpulkan informasi yang Anda berikan secara langsung kepada kami ketika mendaftar akun, menggunakan layanan kami, atau berkomunikasi dengan kami. Informasi ini mungkin termasuk:',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 8),
           Text(
@@ -352,18 +342,14 @@ class KebijakanPrivasiScreen extends StatelessWidget {
             '• Informasi pembayaran (diproses oleh penyedia layanan pembayaran pihak ketiga)\n'
             '• Konten yang Anda unggah ke Aplikasi (seperti foto sepatu Anda)\n'
             '• Komunikasi dengan kami',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 16),
           Text(
             '2. Bagaimana Kami Menggunakan Informasi Anda',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
-          Text(
-            'Kami menggunakan informasi yang kami kumpulkan untuk:',
-            style: TextStyle(fontSize: 16),
-          ),
+          Text('Kami menggunakan informasi yang kami kumpulkan untuk:'),
           SizedBox(height: 8),
           Text(
             '• Menyediakan, memelihara, dan meningkatkan layanan kami\n'
@@ -371,42 +357,37 @@ class KebijakanPrivasiScreen extends StatelessWidget {
             '• Mengirimkan informasi teknis, pembaruan, dan pesan dukungan\n'
             '• Merespons pertanyaan, komentar, dan permintaan Anda\n'
             '• Memantau dan menganalisis tren, penggunaan, dan aktivitas',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 16),
           Text(
             '3. Keamanan Data',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             'Keamanan informasi Anda penting bagi kami. Kami menggunakan tindakan keamanan teknis dan organisasi yang dirancang untuk melindungi informasi pribadi Anda dari akses yang tidak sah dan penyalahgunaan.',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 16),
           Text(
             '4. Perubahan pada Kebijakan Privasi',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             'Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Kami akan memberi tahu Anda tentang perubahan dengan memperbarui tanggal "Terakhir diperbarui" di bagian atas Kebijakan Privasi ini.',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 16),
           Text(
             '5. Hubungi Kami',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             'Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami di:',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 8),
           Text(
             'Email: info@ardefvashoescare.com\nTelepon: 021-12345678\nAlamat: Jl. Sepatu Indah No. 123, Jakarta',
-            style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 32),
         ],

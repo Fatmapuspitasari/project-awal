@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'settings_detail_screen.dart';
 
@@ -20,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    // Ambil pengaturan dari storage jika tersedia
+
     notifikasiDisaktifkan = box.read('notifikasi_dimatikan') ?? false;
     modeDarkDiaktifkan = box.read('mode_dark') ?? false;
     bahasaDipilih = box.read('bahasa') ?? 'Indonesia';
