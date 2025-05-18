@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'profile_2_screen.dart'; 
+import 'package:project_awal/main.dart';
+import 'register_screen.dart';
 
 class Login2Screen extends StatefulWidget {
   const Login2Screen({super.key});
@@ -14,22 +14,33 @@ class Login2Screen extends StatefulWidget {
 class _Login2ScreenState extends State<Login2Screen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final String correctUsername = "fatma";
-  final String correctPassword = "123";
   bool passwordTampil = true;
 
   void login() {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    if (username == correctUsername && password == correctPassword) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const Profile2Screen()),
-      );
+    if (username.isNotEmpty && password.isNotEmpty) {
+      final box = GetStorage();
+
+      final savedUsername = box.read("registered_username");
+      final savedPassword = box.read("registered_password");
+
+      if (username == savedUsername && password == savedPassword) {
+        box.write("username", username); // Simpan session login
+        Get.offAll(() => const MainScreen(initialIndex: 0));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Akun tidak ditemukan atau password salah'),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username atau password salah')),
+        const SnackBar(
+          content: Text('Username dan password tidak boleh kosong'),
+        ),
       );
     }
   }
@@ -43,33 +54,15 @@ class _Login2ScreenState extends State<Login2Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      backgroundColor: passwordTampil
-          ? const Color.fromARGB(255, 20, 195, 253)
-          : Colors.greenAccent,
+      backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Ardefva Shoes Care!",
-                    style: TextStyle(
-                      fontSize: 20, 
-                      fontWeight: FontWeight.bold, 
-                    ),
-                  ),
-                  const SizedBox(height: 10), 
-                  Icon(
-                    FontAwesomeIcons.shoePrints, 
-                    size: 50, 
-                  ),
-                ],
-              ),
+              const SizedBox(height: 10),
+              Image.asset('assets/images/logo.png', width: 150, height: 150),
               const SizedBox(height: 10),
               TextField(
                 controller: _usernameController,
@@ -89,12 +82,8 @@ class _Login2ScreenState extends State<Login2Screen> {
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      passwordTampil
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: passwordTampil
-                          ? const Color.fromARGB(255, 0, 0, 0)
-                          : const Color.fromARGB(255, 0, 6, 10),
+                      passwordTampil ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.black,
                     ),
                     onPressed: menampilkanPassword,
                   ),
@@ -102,13 +91,12 @@ class _Login2ScreenState extends State<Login2Screen> {
                 ),
               ),
               const SizedBox(height: 30),
-              ElevatedButton(
+              ElevatedButton(onPressed: login, child: const Text("Login")),
+              TextButton(
                 onPressed: () {
-                  final box = GetStorage();
-                  box.write("username", _usernameController.text);
-                  Get.to(() => const Profile2Screen());
+                  Get.to(() => const RegisterScreen());
                 },
-                child: const Text("Login"),
+                child: const Text("Belum punya akun? Daftar di sini"),
               ),
             ],
           ),
