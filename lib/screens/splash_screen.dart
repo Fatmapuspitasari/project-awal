@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:project_awal/login_2_screen.dart';
-import 'package:project_awal/main.dart'; // Import untuk MainScreen
+import 'package:project_awal/screens/login_2_screen.dart';
+import 'package:project_awal/screens/main_screen.dart'; // Import untuk MainScreen
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -34,7 +34,6 @@ class _SplashScreenState extends State<SplashScreen>
       if (username == null) {
         Get.off(() => const Login2Screen());
       } else {
-        // Arahkan ke MainScreen dengan tab profile aktif
         Get.off(() => const MainScreen(initialIndex: 1));
       }
     });
@@ -58,23 +57,8 @@ class _SplashScreenState extends State<SplashScreen>
             children: [
               Image.asset(
                 'assets/images/logo.png',
-                width: 100,
-                height: 100,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Selamat Datang di Ardefva Shoes Care",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Roboto',
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              const CircularProgressIndicator(
-                color: Colors.white,
+                width: 150,
+                height: 150,
               ),
             ],
           ),

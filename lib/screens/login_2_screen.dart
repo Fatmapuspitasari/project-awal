@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:project_awal/main.dart';
+import 'package:project_awal/screens/main_screen.dart';
+import 'register_screen.dart';
 
 class Login2Screen extends StatefulWidget {
   const Login2Screen({super.key});
@@ -15,24 +15,54 @@ class _Login2ScreenState extends State<Login2Screen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool passwordTampil = true;
+  
+  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
   void login() {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    // Menerima login dengan username dan password apapun, selama tidak kosong
-    if (username.isNotEmpty && password.isNotEmpty) {
-      // Simpan data login dan navigasi ke MainScreen
-      final box = GetStorage();
-      box.write("username", username);
-      Get.offAll(() => const MainScreen(initialIndex: 0));
-    } else {
+    if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Username dan password tidak boleh kosong')),
       );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password harus minimal 6 karakter')),
+      );
+      return;
+    }
+
+    if (username.contains('@') && !emailRegex.hasMatch(username)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Format email tidak valid')),
+      );
+      return;
+    }
+
+    final box = GetStorage();
+    final savedUsername = box.read("registered_username");
+    final savedPassword = box.read("registered_password");
+    final savedEmail = box.read("registered_email");
+
+    bool isLoginValid = (username == savedUsername || username == savedEmail) && password == savedPassword;
+
+    if (isLoginValid) {
+      box.write("username", savedUsername); 
+      
+      box.write("email", savedEmail);
+      
+      Get.offAll(() => const MainScreen(initialIndex: 0));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Akun tidak ditemukan atau password salah')),
+      );
     }
   }
-
+  
   void menampilkanPassword() {
     setState(() {
       passwordTampil = !passwordTampil;
@@ -42,40 +72,27 @@ class _Login2ScreenState extends State<Login2Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      backgroundColor: passwordTampil
-          ? const Color.fromARGB(255, 20, 195, 253)
-          : Colors.greenAccent,
+      backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Ardefva Shoes Care!",
-                    style: TextStyle(
-                      fontSize: 20, 
-                      fontWeight: FontWeight.bold, 
-                    ),
-                  ),
-                  const SizedBox(height: 10), 
-                  Icon(
-                    FontAwesomeIcons.shoePrints, 
-                    size: 50, 
-                  ),
-                ],
+              const SizedBox(height: 10),
+              Image.asset(
+                'assets/images/logo.png',
+                width: 150,
+                height: 150,
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: _usernameController,
                 decoration: const InputDecoration(
-                  labelText: "Username",
+                  labelText: "Username atau Email",
                   prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(),
+                  hintText: "Masukkan username atau email",
                 ),
               ),
               const SizedBox(height: 20),
@@ -84,16 +101,14 @@ class _Login2ScreenState extends State<Login2Screen> {
                 obscureText: passwordTampil,
                 decoration: InputDecoration(
                   labelText: "Password",
-                  hintText: "Masukkan Password",
+                  hintText: "Minimal 6 karakter",
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
                       passwordTampil
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: passwordTampil
-                          ? const Color.fromARGB(255, 0, 0, 0)
-                          : const Color.fromARGB(255, 0, 6, 10),
+                      color: Colors.black,
                     ),
                     onPressed: menampilkanPassword,
                   ),
@@ -103,7 +118,16 @@ class _Login2ScreenState extends State<Login2Screen> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: login,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                ),
                 child: const Text("Login"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Get.to(() => const RegisterScreen());
+                },
+                child: const Text("Belum punya akun? Daftar di sini"),
               ),
             ],
           ),
