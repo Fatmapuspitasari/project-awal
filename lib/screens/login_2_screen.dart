@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:project_awal/screens/main_screen.dart';
 import 'register_screen.dart';
+import 'main_screen.dart'; // Pastikan file ini ada
 
 class Login2Screen extends StatefulWidget {
   const Login2Screen({super.key});
@@ -15,11 +15,11 @@ class _Login2ScreenState extends State<Login2Screen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool passwordTampil = true;
-  
+
   final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
   void login() {
-    final username = _usernameController.text;
+    final username = _usernameController.text.trim();
     final password = _passwordController.text;
 
     if (username.isEmpty || password.isEmpty) {
@@ -51,18 +51,17 @@ class _Login2ScreenState extends State<Login2Screen> {
     bool isLoginValid = (username == savedUsername || username == savedEmail) && password == savedPassword;
 
     if (isLoginValid) {
-      box.write("username", savedUsername); 
-      
+      box.write("username", savedUsername);
       box.write("email", savedEmail);
-      
-      Get.offAll(() => const MainScreen(initialIndex: 0));
+
+      Get.offAll(() => const MainScreen(initialIndex: 0)); // Pastikan ini didefinisikan
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Akun tidak ditemukan atau password salah')),
       );
     }
   }
-  
+
   void menampilkanPassword() {
     setState(() {
       passwordTampil = !passwordTampil;
@@ -79,12 +78,6 @@ class _Login2ScreenState extends State<Login2Screen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 10),
-              Image.asset(
-                'assets/images/logo.png',
-                width: 150,
-                height: 150,
-              ),
               const SizedBox(height: 10),
               TextField(
                 controller: _usernameController,
@@ -105,9 +98,7 @@ class _Login2ScreenState extends State<Login2Screen> {
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      passwordTampil
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      passwordTampil ? Icons.visibility : Icons.visibility_off,
                       color: Colors.black,
                     ),
                     onPressed: menampilkanPassword,
@@ -118,9 +109,6 @@ class _Login2ScreenState extends State<Login2Screen> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: login,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
                 child: const Text("Login"),
               ),
               TextButton(
