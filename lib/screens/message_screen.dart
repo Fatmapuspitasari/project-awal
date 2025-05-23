@@ -7,9 +7,10 @@ class MessageScreen extends StatefulWidget {
   State<MessageScreen> createState() => _MessageScreenState();
 }
 
-class _MessageScreenState extends State<MessageScreen> with SingleTickerProviderStateMixin {
+class _MessageScreenState extends State<MessageScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
@@ -25,50 +26,64 @@ class _MessageScreenState extends State<MessageScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Status Pesan',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(25),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // HEADER & TABS
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Status Pesan',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                  child: TabBar(
-                    controller: _tabController,
-                    indicator: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(25),
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.black,
-                    tabs: const [
-                      Tab(text: 'Riwayat'),
-                      Tab(text: 'Status'),
-                    ],
+                    padding: const EdgeInsets.all(4),
+                    child: TabBar(
+                      controller: _tabController,
+                      indicator: BoxDecoration(
+                        color: Colors.blueAccent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.grey[600],
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      tabs: const [
+                        Tab(icon: Icon(Icons.history), text: 'Riwayat'),
+                        Tab(
+                          icon: Icon(Icons.local_shipping_outlined),
+                          text: 'Status',
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildRiwayatTab(),
-                _buildStatusTab(),
-              ],
+
+            // TAB CONTENT
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [_buildRiwayatTab(), _buildStatusTab()],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -82,14 +97,13 @@ class _MessageScreenState extends State<MessageScreen> with SingleTickerProvider
           margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey,
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: const Offset(0, 1),
+                color: Colors.black12,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -101,26 +115,18 @@ class _MessageScreenState extends State<MessageScreen> with SingleTickerProvider
                 children: [
                   const Text(
                     'Shoes Wash',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   Text(
                     '${12 - index} Mei 2025',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               Text(
                 'No. Order #SNC-${12345 + index}',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(color: Colors.grey[600]),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -145,14 +151,13 @@ class _MessageScreenState extends State<MessageScreen> with SingleTickerProvider
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey,
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: const Offset(0, 1),
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -161,17 +166,12 @@ class _MessageScreenState extends State<MessageScreen> with SingleTickerProvider
               children: [
                 const Text(
                   'Premium Cleaning',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'No. Order #SNC-12345',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 16),
                 _buildStatusTracker(),
@@ -229,13 +229,10 @@ class _MessageScreenState extends State<MessageScreen> with SingleTickerProvider
             color: isActive ? Colors.green : Colors.grey[300],
             shape: BoxShape.circle,
           ),
-          child: isActive
-              ? const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 12,
-                )
-              : null,
+          child:
+              isActive
+                  ? const Icon(Icons.check, color: Colors.white, size: 12)
+                  : null,
         ),
         const SizedBox(height: 4),
         Text(

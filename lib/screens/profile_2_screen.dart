@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'login_2_screen.dart';
-import 'edit_profil_screen.dart';       
+import 'edit_profil_screen.dart';
+import 'bantuan_screen.dart';
+import 'setting_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -48,188 +50,153 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void logout(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Konfirmasi Logout"),
-        content: const Text("Apakah kamu yakin ingin keluar?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Batal"),
+      builder:
+          (_) => AlertDialog(
+            title: const Text("Konfirmasi Logout"),
+            content: const Text("Apakah kamu yakin ingin keluar?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Batal"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  box.erase();
+                  Get.offAll(() => const Login2Screen());
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text(
+                  "Logout",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              box.erase();
-              Get.offAll(() => const Login2Screen());
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Logout", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildProfileHeader(),
-                  _buildProfileOptions(),
-                  _buildLogoutButton(),
-                ],
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: _pickImage,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundColor:
+                      theme.brightness == Brightness.dark
+                          ? Colors.grey[700]
+                          : Colors.grey[300],
+                  backgroundImage:
+                      _profileImage != null ? FileImage(_profileImage!) : null,
+                  child:
+                      _profileImage == null
+                          ? Icon(
+                            Icons.person,
+                            size: 50,
+                            color: theme.iconTheme.color?.withOpacity(0.6),
+                          )
+                          : null,
+                ),
               ),
-            ),
+
+              const SizedBox(height: 16),
+
+              // Username
+              Text(
+                username,
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              // Email
+              Text(
+                email,
+                style: textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Menu Options
+              _buildOption(
+                icon: Icons.edit,
+                title: "Edit Profil",
+                onTap: () => Get.to(() => const EditProfileScreen()),
+                theme: theme,
+              ),
+              _buildOption(
+                icon: Icons.settings,
+                title: "Pengaturan",
+                onTap: () => Get.to(() => const SettingsScreen()),
+                theme: theme,
+              ),
+              _buildOption(
+                icon: Icons.help_outline,
+                title: "Bantuan",
+                onTap: () => Get.to(() => const BantuanScreen()),
+                theme: theme,
+              ),
+
+              const Spacer(),
+
+              // Logout Button
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: () => logout(context),
+                  icon: const Icon(Icons.logout),
+                  label: const Text(
+                    "Keluar",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildProfileHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 40, bottom: 20),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: _pickImage,
-            child: CircleAvatar(
-              radius: 40,
-              backgroundColor: Colors.purple[800],
-              backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-              child: _profileImage == null
-                  ? const Icon(Icons.person, size: 40, color: Colors.white)
-                  : null,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            username,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            email,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileOptions() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Column(
-        children: [
-          _buildOptionItem(
-            icon: Icons.edit,
-            iconColor: Colors.red[300]!,
-            title: 'Edit Profil',
-            onTap: () {
-              // Navigasi ke halaman Edit Profil
-              Get.to(() => const EditProfileScreen());
-            },
-          ),
-          const SizedBox(height: 10),
-          _buildOptionItem(
-            icon: Icons.settings,
-            iconColor: Colors.grey,
-            title: 'Pengaturan',
-            onTap: () {
-              // Navigasi ke halaman Pengaturan
-              Get.to(() => const EditProfileScreen());
-            },
-          ),
-          const SizedBox(height: 10),
-          _buildOptionItem(
-            icon: Icons.help,
-            iconColor: Colors.red,
-            title: 'Bantuan',
-            onTap: () {
-              // Navigasi ke halaman Bantuan
-              Get.to(() => const());
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOptionItem({
+  Widget _buildOption({
     required IconData icon,
-    required Color iconColor,
     required String title,
     required VoidCallback onTap,
+    required ThemeData theme,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: theme.iconTheme.color),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: iconColor, size: 22),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: onTap,
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: theme.iconTheme.color?.withOpacity(0.6),
       ),
-    );
-  }
-
-  Widget _buildLogoutButton() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => logout(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: const Text(
-          'Keluar',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      onTap: onTap,
+      horizontalTitleGap: 0,
     );
   }
 }
