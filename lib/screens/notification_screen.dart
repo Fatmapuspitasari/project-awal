@@ -49,73 +49,79 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Notifikasi',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // Mark all as read
-                    setState(() {
-                      for (var notification in _notifications) {
-                        notification['read'] = true;
-                      }
-                    });
-                  },
-                  child: const Text('Tandai semua dibaca'),
-                ),
-              ],
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Notifikasi',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        for (var notification in _notifications) {
+                          notification['read'] = true;
+                        }
+                      });
+                    },
+                    child: const Text('Tandai semua dibaca'),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
-            child: _notifications.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    itemCount: _notifications.length,
-                    itemBuilder: (context, index) {
-                      final notification = _notifications[index];
-                      return _buildNotificationItem(notification, index);
-                    },
-                  ),
+            child:
+                _notifications.isEmpty
+                    ? _buildEmptyState(theme)
+                    : ListView.builder(
+                      itemCount: _notifications.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemBuilder: (context, index) {
+                        final notification = _notifications[index];
+                        return _buildNotificationItem(
+                          notification,
+                          index,
+                          theme,
+                        );
+                      },
+                    ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.notifications_off,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.notifications_off, size: 80, color: theme.hintColor),
           const SizedBox(height: 16),
           Text(
             'Tidak ada notifikasi',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey[600],
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: theme.hintColor,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Anda akan melihat notifikasi di sini ketika ada pembaruan',
-            style: TextStyle(
-              color: Colors.grey[600],
-            ),
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
             textAlign: TextAlign.center,
           ),
         ],
@@ -123,17 +129,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Widget _buildNotificationItem(Map<String, dynamic> notification, int index) {
+  Widget _buildNotificationItem(
+    Map<String, dynamic> notification,
+    int index,
+    ThemeData theme,
+  ) {
+    final isRead = notification['read'];
+    final cardColor =
+        isRead ? theme.cardColor : theme.colorScheme.primary.withOpacity(0.1);
+
     return Dismissible(
       key: Key('notification_$index'),
       background: Container(
-        color: Colors.red,
+        color: Colors.redAccent,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: const Icon(
-          Icons.delete,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
@@ -147,57 +158,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
         );
       },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        decoration: BoxDecoration(
-          color: notification['read'] ? Colors.white : Colors.blue[50],
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              spreadRadius: 1,
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Colors.blue,
-            child: Icon(
-              notification['icon'],
-              color: Colors.blue,
-            ),
-          ),
-          title: Text(
-            notification['title'],
-            style: TextStyle(
-              fontWeight: notification['read'] ? FontWeight.normal : FontWeight.bold,
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              Text(notification['body']),
-              const SizedBox(height: 4),
-              Text(
-                notification['time'],
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-          isThreeLine: true,
+      child: Card(
+        elevation: 1.5,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: cardColor,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             setState(() {
               notification['read'] = true;
             });
-            // Show notification details
             Get.dialog(
               AlertDialog(
+                backgroundColor: theme.dialogBackgroundColor,
+                titleTextStyle: theme.textTheme.titleLarge,
+                contentTextStyle: theme.textTheme.bodyMedium,
                 title: Text(notification['title']),
                 content: Text(notification['body']),
                 actions: [
@@ -209,16 +185,65 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             );
           },
-          trailing: notification['read']
-              ? null
-              : Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: Colors.blue,
-                    shape: BoxShape.circle,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF4A90E2), Color(0xFF007AFF)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Icon(
+                    notification['icon'],
+                    color: Colors.white,
+                    size: 24,
                   ),
                 ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        notification['title'],
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight:
+                              isRead ? FontWeight.w500 : FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        notification['body'],
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        notification['time'],
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.hintColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (!isRead)
+                  Container(
+                    margin: const EdgeInsets.only(left: 8, top: 4),
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
