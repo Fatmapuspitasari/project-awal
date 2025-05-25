@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -136,7 +138,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   ) {
     final isRead = notification['read'];
     final cardColor =
-        isRead ? theme.cardColor : theme.colorScheme.primary.withOpacity(0.1);
+        isRead ? theme.cardColor : theme.colorScheme.primary.withAlpha(23);
 
     return Dismissible(
       key: Key('notification_$index'),

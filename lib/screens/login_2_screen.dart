@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'register_screen.dart';
-import 'main_screen.dart'; // Pastikan file ini ada
+import 'main_screen.dart'; 
 
 class Login2Screen extends StatefulWidget {
   const Login2Screen({super.key});
@@ -54,7 +54,7 @@ class _Login2ScreenState extends State<Login2Screen> {
       box.write("username", savedUsername);
       box.write("email", savedEmail);
 
-      Get.offAll(() => const MainScreen(initialIndex: 0)); // Pastikan ini didefinisikan
+      Get.offAll(() => const MainScreen(initialIndex: 0));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Akun tidak ditemukan atau password salah')),
@@ -78,6 +78,11 @@ class _Login2ScreenState extends State<Login2Screen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Image.asset(
+                'assets/images/logo.png',
+                height: 100,
+              ),
+              const SizedBox(height: 10),
               const SizedBox(height: 10),
               TextField(
                 controller: _usernameController,

@@ -18,13 +18,11 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final box = GetStorage();
-  String _selectedLanguage = 'Bahasa Indonesia';
 
   @override
   void initState() {
     super.initState();
 
-    _selectedLanguage = box.read('selected_language') ?? 'Bahasa Indonesia';
     bool storedDarkMode = box.read('dark_mode_enabled') ?? false;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {

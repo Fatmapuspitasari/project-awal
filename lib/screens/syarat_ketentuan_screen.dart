@@ -83,8 +83,7 @@ class SyaratKetentuanScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                    )
-                    .toList(),
+                    ),
               ],
             ),
           ),

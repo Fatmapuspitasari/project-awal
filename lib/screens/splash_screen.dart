@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:project_awal/screens/login_2_screen.dart';
-import 'package:project_awal/screens/main_screen.dart'; // Import untuk MainScreen
+import 'package:project_awal/screens/main_screen.dart'; 
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

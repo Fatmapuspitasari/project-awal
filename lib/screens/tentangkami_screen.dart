@@ -22,7 +22,7 @@ class TentangKamiScreen extends StatelessWidget {
               const Icon(Icons.group, size: 100, color: Colors.blueAccent),
               const SizedBox(height: 20),
               const Text(
-                'Ardefa Shoes Care',
+                'Ardefva Shoes Care',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

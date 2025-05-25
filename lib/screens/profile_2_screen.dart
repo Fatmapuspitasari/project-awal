@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ? Icon(
                             Icons.person,
                             size: 50,
-                            color: theme.iconTheme.color?.withOpacity(0.6),
+                            color: theme.iconTheme.color?.withAlpha(135),
                           )
                           : null,
                 ),
@@ -193,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       trailing: Icon(
         Icons.arrow_forward_ios,
         size: 16,
-        color: theme.iconTheme.color?.withOpacity(0.6),
+        color: theme.iconTheme.color?.withAlpha(135),
       ),
       onTap: onTap,
       horizontalTitleGap: 0,

@@ -51,9 +51,9 @@ class BantuanScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Email: support@aplikasi.com\nTelepon: 021-12345678',
-              style: TextStyle(fontSize: 16),
+            Text(
+              'Email: @gmail.com\nTelepon: 021-12345678',
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),
@@ -61,7 +61,7 @@ class BantuanScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFaqItem(String question, String answer) {
+  static Widget _buildFaqItem(String question, String answer) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
