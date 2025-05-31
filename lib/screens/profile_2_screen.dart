@@ -1,12 +1,12 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'login_2_screen.dart';
 import 'edit_profil_screen.dart';
 import 'bantuan_screen.dart';
 import 'setting_screen.dart';
+import 'supabase_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,69 +17,81 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final box = GetStorage();
-  final ImagePicker _picker = ImagePicker();
-  File? _profileImage;
   late String username;
   late String email;
+
+  SupabaseService get _supabase => Get.put(SupabaseService());
 
   @override
   void initState() {
     super.initState();
     username = box.read('username') ?? 'User';
     email = box.read('email') ?? '$username@email.com';
-    _loadProfileImage();
-  }
-
-  void _loadProfileImage() {
-    final savedPath = box.read('profile_image_$username');
-    if (savedPath != null && File(savedPath).existsSync()) {
-      _profileImage = File(savedPath);
-    }
-  }
-
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        _profileImage = File(picked.path);
-        box.write('profile_image_$username', picked.path);
-      });
-    }
   }
 
   void logout(BuildContext context) {
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text("Konfirmasi Logout"),
-            content: const Text("Apakah kamu yakin ingin keluar?"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Batal"),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  box.erase();
-                  Get.offAll(() => const Login2Screen());
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text(
-                  "Logout",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text("Konfirmasi Logout"),
+        content: const Text("Apakah kamu yakin ingin keluar?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Batal"),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _performLogout();
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text("Logout", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _performLogout() async {
+    try {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      await _supabase.signOut();
+      await box.erase();
+
+      Get.back();
+      Get.offAll(() => const Login2Screen());
+
+      Get.snackbar(
+        'Logout Berhasil',
+        'Anda telah berhasil keluar dari aplikasi',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    } catch (e) {
+      if (Get.isDialogOpen ?? false) Get.back();
+      await box.erase();
+      Get.offAll(() => const Login2Screen());
+
+      Get.snackbar(
+        'Logout',
+        'Logout berhasil (dengan peringatan: ${e.toString()})',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -88,48 +100,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor:
-                      theme.brightness == Brightness.dark
-                          ? Colors.grey[700]
-                          : Colors.grey[300],
-                  backgroundImage:
-                      _profileImage != null ? FileImage(_profileImage!) : null,
-                  child:
-                      _profileImage == null
-                          ? Icon(
-                            Icons.person,
-                            size: 50,
-                            color: theme.iconTheme.color?.withAlpha(135),
-                          )
-                          : null,
+              CircleAvatar(
+                radius: 50,
+                backgroundColor: theme.brightness == Brightness.dark
+                    ? Colors.grey[700]
+                    : Colors.grey[300],
+                child: Icon(
+                  Icons.person,
+                  size: 50,
+                  color: theme.iconTheme.color?.withAlpha(135),
                 ),
               ),
-
               const SizedBox(height: 16),
-
-              // Username
-              Text(
-                username,
-                style: textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
+              Text(username, style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
-
-              // Email
-              Text(
-                email,
-                style: textTheme.bodyMedium?.copyWith(color: theme.hintColor),
-              ),
-
+              Text(email, style: textTheme.bodyMedium?.copyWith(color: theme.hintColor)),
               const SizedBox(height: 30),
 
-              // Menu Options
               _buildOption(
                 icon: Icons.edit,
                 title: "Edit Profil",
@@ -151,7 +138,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               const Spacer(),
 
-              // Logout Button
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -164,9 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ),

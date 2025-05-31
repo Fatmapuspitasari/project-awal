@@ -16,9 +16,16 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final icons = [
       Icons.home,
-      Icons.shopping_bag,
-      Icons.notifications,
+      Icons.history,
+      Icons.payment,
       Icons.person,
+    ];
+
+    final labels = [
+      'Beranda',
+      'Riwayat',
+      'Promo',
+      'Profil',
     ];
 
     return Padding(
@@ -26,15 +33,31 @@ class CustomBottomNavigationBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: List.generate(icons.length, (i) {
-          return ScaleTransition(
-            scale: currentIndex == i ? animation : const AlwaysStoppedAnimation(1.0),
-            child: IconButton(
-              icon: Icon(
-                icons[i],
-                color: currentIndex == i ? Colors.blue : Colors.black,
-              ),
-              iconSize: 30,
-              onPressed: () => onTap(i),
+          final isSelected = currentIndex == i;
+
+          return GestureDetector(
+            onTap: () => onTap(i),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ScaleTransition(
+                  scale: isSelected ? animation : const AlwaysStoppedAnimation(1.0),
+                  child: Icon(
+                    icons[i],
+                    color: isSelected ? Colors.blue : Colors.black,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  labels[i],
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isSelected ? Colors.blue : Colors.black,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ],
             ),
           );
         }),

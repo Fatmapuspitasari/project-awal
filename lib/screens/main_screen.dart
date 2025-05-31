@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_awal/screens/home_screen.dart';
-import 'package:project_awal/screens/message_screen.dart';
-import 'package:project_awal/screens/notification_screen.dart';
+import 'package:project_awal/screens/history_screen.dart';
+import 'package:project_awal/screens/promo_screen.dart';
 import 'package:project_awal/screens/profile_2_screen.dart';
 import 'package:project_awal/widget/custom_bottom_label.dart';
 import 'package:project_awal/widget/custom_bottom_nav_bar.dart';
@@ -20,11 +20,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   late Animation<double> _animation;
   late PageController _pageController;
 
-  final List<String> _titles = ['Beranda', 'Pesan', 'Notifikasi', 'Profil'];
   final List<Widget> _pages = const [
     HomeScreen(),
-    MessageScreen(),
-    NotificationScreen(),
+    HistoryScreen(),
+    PromoScreen(),
     ProfileScreen()
   ];
 
@@ -67,10 +66,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(_titles[currentIndex]),
-        backgroundColor: Colors.blue[500],
-      ),
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),

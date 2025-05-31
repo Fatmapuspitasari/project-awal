@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'history_screen.dart'; // Import the history screen
+import 'supabase_service.dart'; // Import Supabase service
 
 class ShoesWashScreen extends StatefulWidget {
   const ShoesWashScreen({super.key});
@@ -27,6 +29,16 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
 
   final Set<String> bookedServices = {};
   final Map<String, int> quantities = {};
+  String selectedPaymentMethod = 'Tunai';
+  bool _isLoading = false;
+
+  final List<String> paymentMethods = [
+    'Tunai',
+    'Transfer Bank (BCA, Mandiri, BRI)',
+    'E-Wallet (GoPay, OVO, DANA)',
+    'QRIS',
+    'Kartu Kredit/Debit'
+  ];
 
   void _showImageDialog(String imagePath, String title) {
     showDialog(
@@ -53,20 +65,119 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
     );
   }
 
-  void _confirmBooking(String id, String type, String category, int totalPrice) {
+  Future<void> _saveOrderToDatabase(Map<String, dynamic> orderData) async {
+    try {
+      final supabaseService = SupabaseService.instance;
+      
+      // Check if user is logged in
+      if (!supabaseService.isLoggedIn) {
+        throw Exception('Silakan login terlebih dahulu');
+      }
+
+      final userId = supabaseService.currentUser!.id;
+      
+      // Prepare order data for database
+      final dbOrderData = {
+        'user_id': userId,
+        'service_type': 'Shoes Wash',
+        'service_category': orderData['category'],
+        'service_name': orderData['type'],
+        'quantity': orderData['quantity'],
+        'unit_price': orderData['unitPrice'],
+        'total_price': orderData['totalPrice'],
+        'payment_method': orderData['paymentMethod'],
+        'payment_status': 'Belum Dibayar',
+        'service_status': 'Dikonfirmasi',
+        'order_date': DateTime.now().toIso8601String(),
+        'notes': orderData['paymentInfo'],
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      // Insert into database
+      await supabaseService.client
+          .from('orders')
+          .insert(dbOrderData);
+
+      print('Order saved to database successfully');
+    } catch (e) {
+      print('Error saving order to database: $e');
+      rethrow;
+    }
+  }
+
+  void _confirmBooking(String id, String type, String category, int totalPrice, int quantity) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: const Color(0xFFE8EAF0),
         title: const Text('Konfirmasi Pesanan'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Pesan "$category - $type"'),
-            const SizedBox(height: 8),
-            Text('Total: Rp $totalPrice'),
-          ],
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Pesan "$category - $type"'),
+              const SizedBox(height: 8),
+              Text('Jumlah: $quantity'),
+              Text('Total: Rp $totalPrice', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 16),
+              const Text('Metode Pembayaran:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selectedPaymentMethod,
+                    isExpanded: true,
+                    items: paymentMethods.map((String method) {
+                      return DropdownMenuItem<String>(
+                        value: method,
+                        child: Text(method, style: const TextStyle(fontSize: 14)),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedPaymentMethod = newValue!;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('🧼 Info Servis & Pembayaran:',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    SizedBox(height: 4),
+                    Text('• Layanan cuci selesai dalam 1–3 hari kerja',
+                        style: TextStyle(fontSize: 11)),
+                    Text('• Pembayaran bisa dilakukan saat pengambilan',
+                        style: TextStyle(fontSize: 11)),
+                    Text('• Transfer: Konfirmasi bukti via WhatsApp',
+                        style: TextStyle(fontSize: 11)),
+                    Text('• E-Wallet & QRIS: Bayar saat pickup',
+                        style: TextStyle(fontSize: 11)),
+                    Text('• Konsultasi & pengecekan sepatu gratis',
+                        style: TextStyle(fontSize: 11)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -74,22 +185,114 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
             child: const Text('Batal'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: _isLoading ? null : () async {
               setState(() {
-                bookedServices.add(id);
+                _isLoading = true;
               });
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Pesanan dikonfirmasi: $category - $type'),
-                ),
-              );
+
+              try {
+                // Calculate unit price
+                final unitPrice = totalPrice ~/ quantity;
+                
+                // Prepare order data
+                final orderData = {
+                  'title': '$category - $type',
+                  'category': category,
+                  'type': type,
+                  'serviceType': 'Shoes Wash',
+                  'quantity': quantity,
+                  'unitPrice': unitPrice,
+                  'totalPrice': totalPrice,
+                  'paymentMethod': selectedPaymentMethod,
+                  'orderDate': _getCurrentDate(),
+                  'paymentStatus': 'Belum Dibayar',
+                  'serviceStatus': 'Dikonfirmasi',
+                  'paymentInfo': _getPaymentInfo(selectedPaymentMethod),
+                };
+
+                // Save to database
+                await _saveOrderToDatabase(orderData);
+
+                // Update local state
+                setState(() {
+                  bookedServices.add(id);
+                });
+
+                // Add order to history (existing functionality)
+                HistoryScreen.addOrder(orderData);
+
+                Navigator.of(context).pop();
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Pesanan berhasil disimpan: $category - $type x$quantity\nPembayaran: $selectedPaymentMethod'),
+                    duration: const Duration(seconds: 4),
+                    backgroundColor: Colors.green,
+                    action: SnackBarAction(
+                      label: 'Lihat Riwayat',
+                      textColor: Colors.white,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HistoryScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              } catch (e) {
+                Navigator.of(context).pop();
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Gagal menyimpan pesanan: ${SupabaseService.instance.getErrorMessage(e)}'),
+                    duration: const Duration(seconds: 4),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              } finally {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
             },
-            child: const Text('Konfirmasi'),
+            child: _isLoading 
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Konfirmasi'),
           ),
         ],
       ),
     );
+  }
+
+  String _getCurrentDate() {
+    final now = DateTime.now();
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+    ];
+    return '${now.day} ${months[now.month - 1]} ${now.year}';
+  }
+
+  String _getPaymentInfo(String paymentMethod) {
+    switch (paymentMethod) {
+      case 'Transfer Bank (BCA, Mandiri, BRI)':
+        return 'Bayar saat pengambilan atau transfer ke rekening yang disediakan';
+      case 'E-Wallet (GoPay, OVO, DANA)':
+        return 'Scan QR code saat pickup atau transfer sekarang';
+      case 'QRIS':
+        return 'Scan QR code universal saat pengambilan';
+      case 'Kartu Kredit/Debit':
+        return 'Bayar dengan kartu saat pickup';
+      default:
+        return 'Bayar tunai saat pengambilan sepatu';
+    }
   }
 
   Widget _buildItemCard(Map<String, dynamic> item) {
@@ -144,6 +347,17 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                       const SizedBox(height: 4),
                       Text('Rp ${item['price']}',
                           style: const TextStyle(fontSize: 14, color: Color(0xFF2C7EF8), fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.blue.shade200),
+                        ),
+                        child: const Text('🧼 Bayar saat pickup • 1-3 hari kerja',
+                            style: TextStyle(fontSize: 10, color: Colors.blue)),
+                      ),
                     ],
                   ),
                 ),
@@ -178,7 +392,9 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                 Text('Total: Rp $total',
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 ElevatedButton(
-                  onPressed: isBooked ? null : () => _confirmBooking(id, item['type'], item['category'], total),
+                  onPressed: (isBooked || _isLoading)
+                      ? null
+                      : () => _confirmBooking(id, item['type'], item['category'], total, quantity),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         isBooked ? Colors.grey.shade300 : const Color(0xFF2C7EF8),
@@ -186,11 +402,22 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.shopping_cart, color: isBooked ? Colors.grey : Colors.white),
+                      if (_isLoading) 
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      else
+                        Icon(Icons.shopping_cart, color: isBooked ? Colors.grey : Colors.white),
                       const SizedBox(width: 6),
                       Text(
-                        isBooked ? 'Dipesan' : 'Pesan',
+                        _isLoading ? 'Proses...' : (isBooked ? 'Dipesan' : 'Pesan'),
                         style: TextStyle(color: isBooked ? Colors.grey : Colors.white),
                       ),
                     ],
@@ -213,6 +440,19 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
         backgroundColor: const Color(0xFF2C7EF8),
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HistoryScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: priceList.length,
