@@ -1,49 +1,45 @@
 import 'package:flutter/material.dart';
-import 'history_screen.dart'; // Import the history screen
-import 'supabase_service.dart'; // Import Supabase service
+import 'package:project_awal/screens/history_screen.dart';
+import 'package:project_awal/screens/database/supabase_service.dart';
 
-class ShoesWashScreen extends StatefulWidget {
-  const ShoesWashScreen({super.key});
+class ShoesCareScreen extends StatefulWidget {
+  const ShoesCareScreen({super.key});
 
   @override
-  State<ShoesWashScreen> createState() => _ShoesWashScreenState();
+  State<ShoesCareScreen> createState() => _ShoesCareScreenState();
 }
 
-class _ShoesWashScreenState extends State<ShoesWashScreen> {
-  final List<Map<String, dynamic>> priceList = [
-    {'category': 'Cuci Luar', 'type': 'Sneaker', 'price': 15000},
-    {'category': 'Cuci Luar', 'type': 'Kulit', 'price': 15000},
-    {'category': 'Cuci Luar', 'type': 'Full Suede', 'price': 35000},
-    {'category': 'Cuci Luar', 'type': 'Kombinasi Suede', 'price': 20000},
+class _ShoesCareScreenState extends State<ShoesCareScreen> {
+  final List<Map<String, dynamic>> careItems = [
     {
-      'category': 'Cuci Luar',
-      'type': 'Putih (Kain/Kanvas + Whitening)',
-      'price': 25000,
+      'title': 'Paket Lengkap Hemat Pembersih Sepatu',
+      'image': 'assets/images/paketlengkap.jpeg',
+      'price': 45000,
     },
-    {'category': 'Cuci Full', 'type': 'Sneaker', 'price': 25000},
-    {'category': 'Cuci Full', 'type': 'Kulit', 'price': 35000},
-    {'category': 'Cuci Full', 'type': 'Full Suede', 'price': 50000},
-    {'category': 'Cuci Full', 'type': 'Kombinasi Suede', 'price': 35000},
     {
-      'category': 'Cuci Full',
-      'type': 'Putih (Kain/Kanvas + Whitening)',
+      'title': 'Paket Hemat Pembersih Sepatu',
+      'image': 'assets/images/pakethemat.jpeg',
+      'price': 35000,
+    },
+    {
+      'title': 'Pembersih Sepatu Tanpa Air - SHCON SEGEN Foam Cleaner Shoes',
+      'image': 'assets/images/tanpaair.jpeg',
       'price': 30000,
     },
-    {'category': 'Cuci Full', 'type': 'Flat Shoes', 'price': 20000},
     {
-      'category': 'Cuci Premium',
-      'type': 'Express 1 Hari Jadi (Non-Suede)',
-      'price': 50000,
+      'title':
+          'Refill Pembersih Sepatu - Shicon Segen Cleaner Shoes 1 Liter + Parfum',
+      'image': 'assets/images/refill1lt.jpeg',
+      'price': 60000,
     },
-    {'category': 'Cuci Premium', 'type': 'Unyellowing', 'price': 35000},
     {
-      'category': 'Cuci Premium',
-      'type': 'Unyellowing + Full Cuci',
-      'price': 500000,
+      'title': 'Leather Balsam Semir Pembersih Sepatu',
+      'image': 'assets/images/balsam.jpeg',
+      'price': 25000,
     },
   ];
 
-  final Set<String> bookedServices = {};
+  final Set<String> confirmedItems = {};
   final Map<String, int> quantities = {};
   String selectedPaymentMethod = 'Tunai';
   bool _isLoading = false;
@@ -56,7 +52,7 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
     'Kartu Kredit/Debit',
   ];
 
-  void _showImageDialog(String imagePath, String title) {
+  void _showImageDialog(BuildContext context, String imagePath, String title) {
     showDialog(
       context: context,
       builder:
@@ -103,9 +99,9 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
       // Prepare order data for database
       final dbOrderData = {
         'user_id': userId,
-        'service_type': 'Shoes Wash',
-        'service_category': orderData['category'],
-        'service_name': orderData['type'],
+        'service_type': 'Shoes Care',
+        'service_category': 'Produk Perawatan',
+        'service_name': orderData['title'],
         'quantity': orderData['quantity'],
         'unit_price': orderData['unitPrice'],
         'total_price': orderData['totalPrice'],
@@ -128,13 +124,9 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
     }
   }
 
-  void _confirmBooking(
-    String id,
-    String type,
-    String category,
-    int totalPrice,
-    int quantity,
-  ) {
+  void _confirmOrder(String title, int price, int quantity) {
+    final total = price * quantity;
+
     showDialog(
       context: context,
       builder:
@@ -146,14 +138,14 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
             title: const Text('Konfirmasi Pesanan'),
             content: SingleChildScrollView(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Pesan "$category - $type"'),
+                  Text('Pesan "$title"'),
                   const SizedBox(height: 8),
                   Text('Jumlah: $quantity'),
+                  const SizedBox(height: 4),
                   Text(
-                    'Total: Rp $totalPrice',
+                    'Total: Rp $total',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -208,7 +200,7 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '🧼 Info Servis & Pembayaran:',
+                          '💳 Info Pembayaran & Layanan:',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -216,23 +208,23 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '• Layanan cuci selesai dalam 1–3 hari kerja',
+                          '• Pembayaran dapat dilakukan saat pengambilan',
                           style: TextStyle(fontSize: 11),
                         ),
                         Text(
-                          '• Pembayaran bisa dilakukan saat pengambilan',
+                          '• Transfer: Konfirmasi bukti transfer via WhatsApp',
                           style: TextStyle(fontSize: 11),
                         ),
                         Text(
-                          '• Transfer: Konfirmasi bukti via WhatsApp',
+                          '• E-Wallet & QRIS: Scan QR code saat pickup',
                           style: TextStyle(fontSize: 11),
                         ),
                         Text(
-                          '• E-Wallet & QRIS: Bayar saat pickup',
+                          '• Produk ready stock, bisa langsung diambil',
                           style: TextStyle(fontSize: 11),
                         ),
                         Text(
-                          '• Konsultasi & pengecekan sepatu gratis',
+                          '• Konsultasi penggunaan produk gratis',
                           style: TextStyle(fontSize: 11),
                         ),
                       ],
@@ -257,17 +249,15 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
 
                           try {
                             // Calculate unit price
-                            final unitPrice = totalPrice ~/ quantity;
+                            final unitPrice = price;
 
                             // Prepare order data
                             final orderData = {
-                              'title': '$category - $type',
-                              'category': category,
-                              'type': type,
-                              'serviceType': 'Shoes Wash',
+                              'title': title,
+                              'serviceType': 'Shoes Care',
                               'quantity': quantity,
                               'unitPrice': unitPrice,
-                              'totalPrice': totalPrice,
+                              'totalPrice': total,
                               'paymentMethod': selectedPaymentMethod,
                               'orderDate': _getCurrentDate(),
                               'paymentStatus': 'Belum Dibayar',
@@ -282,7 +272,7 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
 
                             // Update local state
                             setState(() {
-                              bookedServices.add(id);
+                              confirmedItems.add(title);
                             });
 
                             // Add order to history (existing functionality)
@@ -293,7 +283,7 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Pesanan berhasil disimpan: $category - $type x$quantity\nPembayaran: $selectedPaymentMethod',
+                                  'Pesanan berhasil disimpan: $title x$quantity\nPembayaran: $selectedPaymentMethod',
                                 ),
                                 duration: const Duration(seconds: 4),
                                 backgroundColor: Colors.green,
@@ -374,68 +364,47 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
       case 'Kartu Kredit/Debit':
         return 'Bayar dengan kartu saat pickup';
       default:
-        return 'Bayar tunai saat pengambilan sepatu';
+        return 'Bayar tunai saat pengambilan produk';
     }
   }
 
-  Widget _buildItemCard(Map<String, dynamic> item) {
-    final id = '${item['category']}_${item['type']}';
-    final quantity = quantities[id] ?? 1;
+  Widget _buildCareCard(Map<String, dynamic> item) {
+    final title = item['title'];
+    final quantity = quantities[title] ?? 1;
     final total = item['price'] * quantity;
-    final isBooked = bookedServices.contains(id);
-
-    String imagePath = 'assets/images/default_shoes.jpg';
-    if (item['category'].contains('Cuci Luar')) {
-      imagePath = 'assets/images/cuciluar.jpg';
-    } else if (item['category'].contains('Cuci Full')) {
-      imagePath = 'assets/images/cucifull.jpg';
-    } else if (item['category'].contains('Cuci Premium')) {
-      imagePath = 'assets/images/cucipremium.jpg';
-    }
+    final isConfirmed = confirmedItems.contains(title);
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.all(6),
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Gambar layanan
             GestureDetector(
-              onTap:
-                  () => _showImageDialog(
-                    imagePath,
-                    '${item['category']} - ${item['type']}',
-                  ),
+              onTap: () => _showImageDialog(context, item['image'], title),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
-                  imagePath,
+                  item['image'],
                   width: double.infinity,
-                  height: 100,
+                  height: 110,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            // Detail kategori dan tipe layanan
+            const SizedBox(height: 12),
+
+            // Title and price section
             Text(
-              '${item['category']}',
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.blueAccent,
-                fontWeight: FontWeight.w600,
-              ),
+              title,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
-            Text(
-              '${item['type']}',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               'Rp ${item['price']}',
               style: const TextStyle(
@@ -444,111 +413,129 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
+                color: Colors.green.shade50,
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.blue.shade200),
+                border: Border.all(color: Colors.green.shade200),
               ),
               child: const Text(
-                '🧼 Bayar saat pickup • 1-3 hari kerja',
-                style: TextStyle(fontSize: 10, color: Colors.blue),
-                overflow: TextOverflow.ellipsis,
+                '💳 Ready stock',
+                style: TextStyle(fontSize: 9, color: Colors.green),
               ),
             ),
+            const SizedBox(height: 12),
+            const Divider(height: 1, thickness: 1, color: Colors.grey),
             const SizedBox(height: 8),
-            // Kontrol jumlah barang
+
+            // Quantity section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                const Text('Jumlah', style: TextStyle(fontSize: 12)),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      onPressed: () {
+                    GestureDetector(
+                      onTap: () {
                         if (quantity > 1)
-                          setState(() => quantities[id] = quantity - 1);
+                          setState(() => quantities[title] = quantity - 1);
                       },
-                      icon: const Icon(Icons.remove_circle_outline, size: 20),
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.remove, size: 16),
+                      ),
                     ),
-                    Text('$quantity'),
-                    IconButton(
-                      onPressed:
-                          () => setState(() => quantities[id] = quantity + 1),
-                      icon: const Icon(Icons.add_circle_outline, size: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        '$quantity',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap:
+                          () =>
+                              setState(() => quantities[title] = quantity + 1),
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.add, size: 16),
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 4),
-            // Baris Total harga dan tombol pemesanan
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Rp $total',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+            const SizedBox(height: 8),
+
+            Text(
+              'Total: Rp $total',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed:
+                    (isConfirmed || _isLoading)
+                        ? null
+                        : () => _confirmOrder(title, item['price'], quantity),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isConfirmed
+                          ? Colors.grey.shade300
+                          : const Color(0xFF2C7EF8),
+                  disabledBackgroundColor: Colors.grey.shade300,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
-                ElevatedButton(
-                  onPressed:
-                      (isBooked || _isLoading)
-                          ? null
-                          : () => _confirmBooking(
-                            id,
-                            item['type'],
-                            item['category'],
-                            total,
-                            quantity,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_isLoading)
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
                           ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isBooked
-                            ? Colors.grey.shade300
-                            : const Color(0xFF2C7EF8),
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (_isLoading)
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      else
-                        Icon(
-                          Icons.shopping_cart,
-                          size: 16,
-                          color: isBooked ? Colors.grey : Colors.white,
                         ),
-                      const SizedBox(width: 6),
-                      Text(
-                        _isLoading
-                            ? 'Proses...'
-                            : (isBooked ? 'Dipesan' : 'Pesan'),
-                        style: TextStyle(
-                          color: isBooked ? Colors.grey : Colors.white,
-                          fontSize: 12,
-                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.shopping_cart,
+                        color: isConfirmed ? Colors.grey : Colors.white,
+                        size: 16,
                       ),
-                    ],
-                  ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _isLoading
+                          ? 'Proses...'
+                          : (isConfirmed ? 'Dipesan' : 'Pesan'),
+                      style: TextStyle(
+                        color: isConfirmed ? Colors.grey : Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
@@ -561,22 +548,33 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F4F7),
       appBar: AppBar(
-        title: const Text('Shoes Wash Booking'),
+        title: const Text('Shoes Care Booking'),
         backgroundColor: const Color(0xFF2C7EF8),
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        padding: const EdgeInsets.all(8.0),
         child: GridView.builder(
-          itemCount: priceList.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.72,
+            childAspectRatio: 0.65,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
           ),
-          itemBuilder: (context, index) => _buildItemCard(priceList[index]),
+          itemCount: careItems.length,
+          itemBuilder: (context, index) => _buildCareCard(careItems[index]),
         ),
       ),
     );

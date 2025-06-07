@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:project_awal/screens/shoes_repair_screen.dart';
+import 'shoes_repair_screen.dart';
 import 'shoes_wash_screen.dart';
 import 'shoes_care_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const HomePage();
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   late PageController _pageController;
@@ -104,8 +95,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      height: 200,
-      margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+      height: 180, // Reduced height to prevent overflow
+      margin: const EdgeInsets.fromLTRB(24, 0, 24, 16), // Reduced bottom margin
       child: Column(
         children: [
           Expanded(
@@ -166,7 +157,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               ),
                               // Content
                               Padding(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(
+                                  16,
+                                ), // Reduced padding
                                 child: Row(
                                   children: [
                                     Expanded(
@@ -197,34 +190,52 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            promo['subtitle'],
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w800,
-                                              letterSpacing: -0.3,
-                                              height: 1.2,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text(
-                                            promo['description'],
-                                            style: TextStyle(
-                                              color: Colors.white.withAlpha(
-                                                204,
+                                          const SizedBox(
+                                            height: 6,
+                                          ), // Reduced spacing
+                                          Flexible(
+                                            // Added Flexible to prevent overflow
+                                            child: Text(
+                                              promo['subtitle'],
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    14, // Reduced font size
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: -0.3,
+                                                height: 1.2,
                                               ),
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.3,
+                                              maxLines: 2, // Added maxLines
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
-                                          const SizedBox(height: 12),
+                                          const SizedBox(
+                                            height: 4,
+                                          ), // Reduced spacing
+                                          Flexible(
+                                            // Added Flexible to prevent overflow
+                                            child: Text(
+                                              promo['description'],
+                                              style: TextStyle(
+                                                color: Colors.white.withAlpha(
+                                                  204,
+                                                ),
+                                                fontSize:
+                                                    11, // Reduced font size
+                                                fontWeight: FontWeight.w500,
+                                                height: 1.3,
+                                              ),
+                                              maxLines: 2, // Added maxLines
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 8,
+                                          ), // Reduced spacing
                                           Container(
                                             padding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
+                                              horizontal: 10, // Reduced padding
+                                              vertical: 5,
                                             ),
                                             decoration: BoxDecoration(
                                               color: Colors.white,
@@ -247,7 +258,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   'Ambil Promo',
                                                   style: TextStyle(
                                                     color: promo['color'],
-                                                    fontSize: 10,
+                                                    fontSize:
+                                                        9, // Reduced font size
                                                     fontWeight: FontWeight.w700,
                                                     letterSpacing: 0.3,
                                                   ),
@@ -256,7 +268,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 Icon(
                                                   Icons.arrow_forward_rounded,
                                                   color: promo['color'],
-                                                  size: 12,
+                                                  size: 11, // Reduced icon size
                                                 ),
                                               ],
                                             ),
@@ -264,7 +276,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(width: 16),
+                                    const SizedBox(
+                                      width: 12,
+                                    ), // Reduced spacing
                                     // Icon instead of image
                                     Expanded(
                                       child: Container(
@@ -278,7 +292,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           child: Icon(
                                             promo['icon'],
                                             color: Colors.white.withAlpha(180),
-                                            size: 40,
+                                            size: 35, // Reduced icon size
                                           ),
                                         ),
                                       ),
@@ -294,7 +308,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               },
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10), // Reduced spacing
           // Dots indicator
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -604,7 +618,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               // Header
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+                padding: const EdgeInsets.fromLTRB(
+                  24,
+                  20,
+                  24,
+                  24,
+                ), // Reduced bottom padding
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -668,7 +687,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               _buildPromoSlideshow(),
               // Services Grid
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                padding: const EdgeInsets.fromLTRB(
+                  24,
+                  0,
+                  24,
+                  32,
+                ), // Added bottom padding
                 child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

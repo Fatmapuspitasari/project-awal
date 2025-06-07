@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'supabase_service.dart';
+import 'package:project_awal/screens/database/supabase_service.dart';
 import 'login_2_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -18,7 +18,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
@@ -61,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final isUsernameExists = await _supabaseService.isUsernameExists(
-        _usernameController.text.trim()
+        _usernameController.text.trim(),
       );
 
       if (isUsernameExists) {
@@ -81,9 +82,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: _passwordController.text.trim(),
         username: _usernameController.text.trim(),
         fullName: _fullNameController.text.trim(),
-        phoneNumber: _phoneController.text.trim().isNotEmpty 
-            ? _phoneController.text.trim() 
-            : null,
+        phoneNumber:
+            _phoneController.text.trim().isNotEmpty
+                ? _phoneController.text.trim()
+                : null,
       );
 
       if (response.user != null) {
@@ -91,26 +93,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (context) => AlertDialog(
-              icon: const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 48,
-              ),
-              title: const Text('Pendaftaran Berhasil!'),
-              content: const Text(
-                'Akun Anda telah berhasil dibuat. Anda dapat langsung login untuk melanjutkan.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Get.off(() => const Login2Screen());
-                  },
-                  child: const Text('OK'),
+            builder:
+                (context) => AlertDialog(
+                  icon: const Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 48,
+                  ),
+                  title: const Text('Pendaftaran Berhasil!'),
+                  content: const Text(
+                    'Akun Anda telah berhasil dibuat. Anda dapat langsung login untuk melanjutkan.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Get.off(() => const Login2Screen());
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
           );
         }
       }
@@ -151,10 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daftar Akun'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Daftar Akun'), centerTitle: true),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -168,10 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const Text(
                   'Lengkapi data di bawah untuk membuat akun',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
                 const SizedBox(height: 32),
                 TextFormField(
@@ -247,7 +244,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: _togglePasswordVisibility,
                     ),
@@ -270,7 +269,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: _toggleConfirmPasswordVisibility,
                     ),
@@ -315,19 +316,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                          : const Text(
+                            'Daftar',
+                            style: TextStyle(fontSize: 16),
                           ),
-                        )
-                      : const Text(
-                          'Daftar',
-                          style: TextStyle(fontSize: 16),
-                        ),
                 ),
                 const SizedBox(height: 16),
                 Row(

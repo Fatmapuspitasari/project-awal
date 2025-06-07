@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'screens/splash_screen.dart';
 import 'theme_control.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'screens/supabase_service.dart';
+import 'screens/database/supabase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

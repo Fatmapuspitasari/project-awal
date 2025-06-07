@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'register_screen.dart';
 import 'main_screen.dart';
-import 'supabase_service.dart';
+import 'package:project_awal/screens/database/supabase_service.dart';
 
 class Login2Screen extends StatefulWidget {
   const Login2Screen({super.key});
@@ -36,10 +36,13 @@ class _Login2ScreenState extends State<Login2Screen> {
       if (res.user != null && res.session != null) {
         // Save user data to persistent storage
         await _saveUserDataToStorage(res.user!);
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login berhasil!'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Login berhasil!'),
+              backgroundColor: Colors.green,
+            ),
           );
           await Future.delayed(const Duration(milliseconds: 500));
           Get.offAll(() => const MainScreen(initialIndex: 0));
@@ -58,12 +61,15 @@ class _Login2ScreenState extends State<Login2Screen> {
 
   Future<void> _saveUserDataToStorage(User user) async {
     // Save complete user data for persistent login
-    await box.write('username', user.userMetadata?['username'] ?? user.email?.split('@')[0] ?? 'User');
+    await box.write(
+      'username',
+      user.userMetadata?['username'] ?? user.email?.split('@')[0] ?? 'User',
+    );
     await box.write('email', user.email ?? '');
     await box.write('user_id', user.id);
     await box.write('is_logged_in', true);
     await box.write('last_login', DateTime.now().toIso8601String());
-    
+
     // Save additional user metadata if available
     if (user.userMetadata != null) {
       await box.write('user_metadata', user.userMetadata);
@@ -73,12 +79,17 @@ class _Login2ScreenState extends State<Login2Screen> {
   Future<void> _forgotPassword() async {
     final email = _emailController.text.trim();
 
-    if (email.isEmpty) return _showError('Masukkan email terlebih dahulu', Colors.orange);
-    if (!_emailRegex.hasMatch(email)) return _showError('Format email tidak valid');
+    if (email.isEmpty)
+      return _showError('Masukkan email terlebih dahulu', Colors.orange);
+    if (!_emailRegex.hasMatch(email))
+      return _showError('Format email tidak valid');
 
     try {
       await _supabase.resetPassword(email);
-      _showError('Link reset password telah dikirim ke email Anda', Colors.green);
+      _showError(
+        'Link reset password telah dikirim ke email Anda',
+        Colors.green,
+      );
     } catch (e) {
       _showError(_supabase.getErrorMessage(e));
     }
@@ -86,7 +97,9 @@ class _Login2ScreenState extends State<Login2Screen> {
 
   void _showError(String message, [Color color = Colors.red]) {
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
     }
   }
 
@@ -110,10 +123,7 @@ class _Login2ScreenState extends State<Login2Screen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 120,
-                  ),
+                  Image.asset('assets/images/logo.png', height: 120),
                   const SizedBox(height: 8),
                   const Text(
                     'Silakan login untuk melanjutkan',
@@ -130,8 +140,10 @@ class _Login2ScreenState extends State<Login2Screen> {
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) return 'Email tidak boleh kosong';
-                      if (!_emailRegex.hasMatch(value.trim())) return 'Format email tidak valid';
+                      if (value == null || value.trim().isEmpty)
+                        return 'Email tidak boleh kosong';
+                      if (!_emailRegex.hasMatch(value.trim()))
+                        return 'Format email tidak valid';
                       return null;
                     },
                   ),
@@ -144,14 +156,23 @@ class _Login2ScreenState extends State<Login2Screen> {
                       hintText: "Minimal 6 karakter",
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed:
+                            () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                       ),
                       border: const OutlineInputBorder(),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Password tidak boleh kosong';
-                      if (value.length < 6) return 'Password minimal 6 karakter';
+                      if (value == null || value.isEmpty)
+                        return 'Password tidak boleh kosong';
+                      if (value.length < 6)
+                        return 'Password minimal 6 karakter';
                       return null;
                     },
                   ),
@@ -167,15 +188,26 @@ class _Login2ScreenState extends State<Login2Screen> {
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                          )
-                        : const Text('Masuk', style: TextStyle(fontSize: 16)),
+                    child:
+                        _isLoading
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : const Text(
+                              'Masuk',
+                              style: TextStyle(fontSize: 16),
+                            ),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -184,7 +216,10 @@ class _Login2ScreenState extends State<Login2Screen> {
                       const Text('Belum punya akun? '),
                       TextButton(
                         onPressed: () => Get.to(() => const RegisterScreen()),
-                        child: const Text('Daftar di sini', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'Daftar di sini',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),

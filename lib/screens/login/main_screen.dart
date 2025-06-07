@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_awal/screens/home_screen.dart';
+import 'package:project_awal/screens/beranda/home_screen.dart';
 import 'package:project_awal/screens/history_screen.dart';
 import 'package:project_awal/screens/store_screen.dart';
 import 'package:project_awal/screens/profile_2_screen.dart';

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
-import 'login_2_screen.dart';
-import 'edit_profil_screen.dart';
+import 'package:project_awal/screens/login/login_2_screen.dart';
 import 'bantuan_screen.dart';
 import 'tentangkami_screen.dart';
 import 'syarat_ketentuan_screen.dart';
-import 'supabase_service.dart';
-import '../theme_control.dart';
+import 'package:project_awal/screens/database/supabase_service.dart';
+import 'package:project_awal/theme_control.dart';
+import 'edit_profil_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

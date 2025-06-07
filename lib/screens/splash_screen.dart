@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:project_awal/screens/login_2_screen.dart';
-import 'package:project_awal/screens/main_screen.dart';
+import 'package:project_awal/screens/login/login_2_screen.dart';
+import 'package:project_awal/screens/login/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -37,17 +37,17 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _checkAuthStatus() async {
     // Wait for splash animation to complete
     await Future.delayed(const Duration(seconds: 3));
-    
+
     try {
       // Check if user has valid Supabase session
       final supabaseClient = Supabase.instance.client;
       final session = supabaseClient.auth.currentSession;
-      
+
       if (session != null) {
         // Session exists and is valid
         // Save user data to local storage for quick access
         await _saveUserData(session.user);
-        
+
         // Navigate to main screen
         if (mounted) {
           Get.offAll(() => const MainScreen(initialIndex: 0));
@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
     final String? username = box.read('username');
     final String? email = box.read('email');
     final bool? isLoggedIn = box.read('is_logged_in');
-    
+
     if (username != null && email != null && isLoggedIn == true) {
       // User data exists in local storage
       if (mounted) {
@@ -84,7 +84,10 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _saveUserData(User user) async {
     // Save user data to local storage
-    await box.write('username', user.userMetadata?['username'] ?? user.email?.split('@')[0] ?? 'User');
+    await box.write(
+      'username',
+      user.userMetadata?['username'] ?? user.email?.split('@')[0] ?? 'User',
+    );
     await box.write('email', user.email ?? '');
     await box.write('user_id', user.id);
     await box.write('is_logged_in', true);
@@ -107,11 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/logo.png',
-                width: 150,
-                height: 150,
-              ),
+              Image.asset('assets/images/logo.png', width: 150, height: 150),
               const SizedBox(height: 20),
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
