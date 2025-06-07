@@ -376,13 +376,14 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.all(6),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Image section
             GestureDetector(
               onTap: () => _showImageDialog(context, item['image'], title),
               child: ClipRRect(
@@ -390,51 +391,58 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                 child: Image.asset(
                   item['image'],
                   width: double.infinity,
-                  height: 110,
+                  height: 160,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             // Title and price section
             Text(
               title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              maxLines: 2,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                height: 1.3,
+              ),
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               'Rp ${item['price']}',
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 18,
                 color: Color(0xFF2C7EF8),
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: Colors.green.shade200),
               ),
               child: const Text(
                 '💳 Ready stock',
-                style: TextStyle(fontSize: 9, color: Colors.green),
+                style: TextStyle(fontSize: 12, color: Colors.green),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             const Divider(height: 1, thickness: 1, color: Colors.grey),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
             // Quantity section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Jumlah', style: TextStyle(fontSize: 12)),
+                const Text(
+                  'Jumlah',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -444,20 +452,23 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                           setState(() => quantities[title] = quantity - 1);
                       },
                       child: Container(
-                        width: 24,
-                        height: 24,
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(Icons.remove, size: 16),
+                        child: const Icon(Icons.remove, size: 18),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         '$quantity',
-                        style: const TextStyle(fontSize: 12),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     GestureDetector(
@@ -465,26 +476,30 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                           () =>
                               setState(() => quantities[title] = quantity + 1),
                       child: Container(
-                        width: 24,
-                        height: 24,
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(Icons.add, size: 16),
+                        child: const Icon(Icons.add, size: 18),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
             Text(
               'Total: Rp $total',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color(0xFF2C7EF8),
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -499,17 +514,17 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                           : const Color(0xFF2C7EF8),
                   disabledBackgroundColor: Colors.grey.shade300,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (_isLoading)
                       const SizedBox(
-                        width: 16,
-                        height: 16,
+                        width: 20,
+                        height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
@@ -521,16 +536,17 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                       Icon(
                         Icons.shopping_cart,
                         color: isConfirmed ? Colors.grey : Colors.white,
-                        size: 16,
+                        size: 18,
                       ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 8),
                     Text(
                       _isLoading
                           ? 'Proses...'
                           : (isConfirmed ? 'Dipesan' : 'Pesan'),
                       style: TextStyle(
                         color: isConfirmed ? Colors.grey : Colors.white,
-                        fontSize: 12,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -564,18 +580,10 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.65,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-          ),
-          itemCount: careItems.length,
-          itemBuilder: (context, index) => _buildCareCard(careItems[index]),
-        ),
+      body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: careItems.length,
+        itemBuilder: (context, index) => _buildCareCard(careItems[index]),
       ),
     );
   }

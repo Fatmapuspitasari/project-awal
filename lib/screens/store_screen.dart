@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
-class StoreScreen extends StatelessWidget {
+class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
 
-  final List<Map<String, String>> stores = const [
+  @override
+  State<StoreScreen> createState() => _StoreScreenState();
+}
+
+class _StoreScreenState extends State<StoreScreen> {
+  final List<Map<String, String>> stores = [
     {
       'name': 'Ardeeva Shoes Jakarta',
       'address': 'Jl. Sudirman No. 45, Jakarta Selatan',

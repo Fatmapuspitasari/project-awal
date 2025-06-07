@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'shoes_repair_screen.dart';
-import 'shoes_wash_screen.dart';
 import 'shoes_care_screen.dart';
+import 'shoes_wash_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -95,8 +95,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      height: 180, // Reduced height to prevent overflow
-      margin: const EdgeInsets.fromLTRB(24, 0, 24, 16), // Reduced bottom margin
+      height: 160, // Further reduced height
+      margin: const EdgeInsets.fromLTRB(24, 0, 24, 12), // Reduced margins
       child: Column(
         children: [
           Expanded(
@@ -115,7 +115,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(
+                              16,
+                            ), // Slightly reduced
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -124,8 +126,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             boxShadow: [
                               BoxShadow(
                                 color: promo['color'].withAlpha(68),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
+                                blurRadius: 15, // Reduced shadow
+                                offset: const Offset(0, 6),
                                 spreadRadius: -2,
                               ),
                               BoxShadow(
@@ -133,8 +135,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     isDark
                                         ? Colors.black38
                                         : Colors.grey.withAlpha(45),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                                blurRadius: 6, // Reduced shadow
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
@@ -143,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Positioned.fill(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(16),
                                     gradient: RadialGradient(
                                       center: Alignment.topRight,
                                       radius: 1.5,
@@ -158,8 +160,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               // Content
                               Padding(
                                 padding: const EdgeInsets.all(
-                                  16,
-                                ), // Reduced padding
+                                  14,
+                                ), // Further reduced padding
                                 child: Row(
                                   children: [
                                     Expanded(
@@ -172,81 +174,78 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         children: [
                                           Container(
                                             padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
+                                              horizontal: 6,
+                                              vertical: 3,
                                             ),
                                             decoration: BoxDecoration(
                                               color: Colors.white.withAlpha(45),
                                               borderRadius:
-                                                  BorderRadius.circular(12),
+                                                  BorderRadius.circular(10),
                                             ),
                                             child: Text(
                                               promo['title'],
                                               style: const TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 10,
+                                                fontSize: 9, // Further reduced
                                                 fontWeight: FontWeight.w600,
                                                 letterSpacing: 0.5,
                                               ),
                                             ),
                                           ),
                                           const SizedBox(
-                                            height: 6,
+                                            height: 4,
                                           ), // Reduced spacing
                                           Flexible(
-                                            // Added Flexible to prevent overflow
                                             child: Text(
                                               promo['subtitle'],
                                               style: const TextStyle(
                                                 color: Colors.white,
-                                                fontSize:
-                                                    14, // Reduced font size
+                                                fontSize: 12, // Further reduced
                                                 fontWeight: FontWeight.w800,
                                                 letterSpacing: -0.3,
-                                                height: 1.2,
+                                                height: 1.1,
                                               ),
-                                              maxLines: 2, // Added maxLines
+                                              maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           const SizedBox(
-                                            height: 4,
+                                            height: 3,
                                           ), // Reduced spacing
                                           Flexible(
-                                            // Added Flexible to prevent overflow
                                             child: Text(
                                               promo['description'],
                                               style: TextStyle(
                                                 color: Colors.white.withAlpha(
                                                   204,
                                                 ),
-                                                fontSize:
-                                                    11, // Reduced font size
+                                                fontSize: 10, // Further reduced
                                                 fontWeight: FontWeight.w500,
-                                                height: 1.3,
+                                                height: 1.2,
                                               ),
-                                              maxLines: 2, // Added maxLines
+                                              maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           const SizedBox(
-                                            height: 8,
+                                            height: 6,
                                           ), // Reduced spacing
                                           Container(
                                             padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, // Reduced padding
-                                              vertical: 5,
+                                              horizontal:
+                                                  8, // Further reduced padding
+                                              vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
                                               color: Colors.white,
                                               borderRadius:
-                                                  BorderRadius.circular(15),
+                                                  BorderRadius.circular(12),
                                               boxShadow: [
                                                 BoxShadow(
                                                   color: Colors.black.withAlpha(
                                                     45,
                                                   ),
-                                                  blurRadius: 8,
+                                                  blurRadius: 6,
                                                   offset: const Offset(0, 2),
                                                 ),
                                               ],
@@ -259,16 +258,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                   style: TextStyle(
                                                     color: promo['color'],
                                                     fontSize:
-                                                        9, // Reduced font size
+                                                        8, // Further reduced
                                                     fontWeight: FontWeight.w700,
                                                     letterSpacing: 0.3,
                                                   ),
                                                 ),
-                                                const SizedBox(width: 4),
+                                                const SizedBox(width: 3),
                                                 Icon(
                                                   Icons.arrow_forward_rounded,
                                                   color: promo['color'],
-                                                  size: 11, // Reduced icon size
+                                                  size: 10, // Further reduced
                                                 ),
                                               ],
                                             ),
@@ -277,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       ),
                                     ),
                                     const SizedBox(
-                                      width: 12,
+                                      width: 10,
                                     ), // Reduced spacing
                                     // Icon instead of image
                                     Expanded(
@@ -285,14 +284,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         decoration: BoxDecoration(
                                           color: Colors.white.withAlpha(34),
                                           borderRadius: BorderRadius.circular(
-                                            15,
+                                            12,
                                           ),
                                         ),
                                         child: Center(
                                           child: Icon(
                                             promo['icon'],
                                             color: Colors.white.withAlpha(180),
-                                            size: 35, // Reduced icon size
+                                            size: 30, // Further reduced
                                           ),
                                         ),
                                       ),
@@ -308,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               },
             ),
           ),
-          const SizedBox(height: 10), // Reduced spacing
+          const SizedBox(height: 8), // Reduced spacing
           // Dots indicator
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -316,15 +315,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               promoData.length,
               (index) => AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                width: _currentPromoIndex == index ? 20 : 8,
-                height: 8,
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 2,
+                ), // Reduced margin
+                width: _currentPromoIndex == index ? 16 : 6, // Reduced sizes
+                height: 6,
                 decoration: BoxDecoration(
                   color:
                       _currentPromoIndex == index
                           ? theme.primaryColor
                           : theme.hintColor.withAlpha(90),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
             ),
@@ -348,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               opacity: _animation.value,
               child: Material(
                 elevation: 0,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16), // Reduced radius
                 child: InkWell(
                   onTap:
                       () => Navigator.push(
@@ -357,10 +358,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           builder: (_) => service['screen'] as Widget,
                         ),
                       ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -372,8 +373,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       boxShadow: [
                         BoxShadow(
                           color: color.withAlpha(34),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
+                          blurRadius: 15, // Reduced shadow
+                          offset: const Offset(0, 6),
                           spreadRadius: -3,
                         ),
                         BoxShadow(
@@ -381,8 +382,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               isDark
                                   ? Colors.black26
                                   : Colors.grey.withAlpha(23),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                          blurRadius: 6, // Reduced shadow
+                          offset: const Offset(0, 3),
                         ),
                       ],
                       border: Border.all(
@@ -404,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20),
+                                    top: Radius.circular(16),
                                   ),
                                   image: DecorationImage(
                                     image: AssetImage(service['image']),
@@ -416,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20),
+                                    top: Radius.circular(16),
                                   ),
                                   gradient: LinearGradient(
                                     begin: Alignment.topCenter,
@@ -429,20 +430,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ),
                               Positioned(
-                                top: 8,
-                                right: 8,
+                                top: 6, // Reduced positioning
+                                right: 6,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
+                                    horizontal: 6, // Reduced padding
+                                    vertical: 3,
                                   ),
                                   decoration: BoxDecoration(
                                     color: color.withAlpha(203),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(10),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withAlpha(45),
-                                        blurRadius: 6,
+                                        blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       ),
                                     ],
@@ -452,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 10,
+                                      fontSize: 9,
                                     ),
                                   ),
                                 ),
@@ -464,21 +465,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Expanded(
                           flex: 2,
                           child: Padding(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(
+                              10,
+                            ), // Reduced padding
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize:
+                                  MainAxisSize.min, // Added to prevent overflow
                               children: [
                                 Row(
                                   children: [
                                     Container(
-                                      width: 3,
-                                      height: 16,
+                                      width: 2, // Reduced width
+                                      height: 14, // Reduced height
                                       decoration: BoxDecoration(
                                         color: color,
-                                        borderRadius: BorderRadius.circular(2),
+                                        borderRadius: BorderRadius.circular(1),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 6), // Reduced spacing
                                     Expanded(
                                       child: Text(
                                         service['title'],
@@ -490,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                       ? Colors.white
                                                       : Colors.grey.shade800,
                                               letterSpacing: -0.3,
-                                              fontSize: 14,
+                                              fontSize: 13, // Reduced font size
                                             ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -498,38 +503,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                Expanded(
+                                const SizedBox(height: 6), // Reduced spacing
+                                Flexible(
+                                  // Changed from Expanded to Flexible
                                   child: Text(
                                     service['description'],
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.hintColor,
-                                      height: 1.4,
+                                      height: 1.3,
                                       letterSpacing: 0.1,
-                                      fontSize: 11,
+                                      fontSize: 10, // Reduced font size
                                     ),
-                                    maxLines: 3,
+                                    maxLines: 2, // Reduced max lines
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 6), // Reduced spacing
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
+                                      horizontal: 10, // Reduced padding
+                                      vertical: 5,
                                     ),
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
                                         colors: [color, color.withAlpha(180)],
                                       ),
-                                      borderRadius: BorderRadius.circular(15),
+                                      borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
                                           color: color.withAlpha(90),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 3),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
                                         ),
                                       ],
                                     ),
@@ -541,15 +547,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 10,
+                                            fontSize: 9, // Reduced font size
                                             letterSpacing: 0.3,
                                           ),
                                         ),
-                                        SizedBox(width: 4),
+                                        SizedBox(width: 3),
                                         Icon(
                                           Icons.arrow_forward_rounded,
                                           color: Colors.white,
-                                          size: 12,
+                                          size: 11, // Reduced icon size
                                         ),
                                       ],
                                     ),
@@ -620,10 +626,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(
                   24,
+                  16,
+                  24,
                   20,
-                  24,
-                  24,
-                ), // Reduced bottom padding
+                ), // Reduced padding
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -642,8 +648,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Row(
                         children: [
                           Container(
-                            width: 6,
-                            height: 32,
+                            width: 5, // Reduced width
+                            height: 28, // Reduced height
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
@@ -651,16 +657,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   theme.primaryColor.withAlpha(135),
                                 ],
                               ),
-                              borderRadius: BorderRadius.circular(3),
+                              borderRadius: BorderRadius.circular(2.5),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 14), // Reduced spacing
                           Expanded(
                             child: Text(
                               'Layanan Terbaik Kami',
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: -0.5,
+                                fontSize: 20, // Reduced font size
                                 color:
                                     theme.brightness == Brightness.dark
                                         ? Colors.white
@@ -670,13 +677,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10), // Reduced spacing
                       Text(
                         'Pilih layanan profesional untuk sepatu kesayangan Anda',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.hintColor,
                           height: 1.4,
                           letterSpacing: 0.2,
+                          fontSize: 13, // Reduced font size
                         ),
                       ),
                     ],
@@ -691,16 +699,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   24,
                   0,
                   24,
-                  32,
-                ), // Added bottom padding
+                  24,
+                ), // Reduced bottom padding
                 child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.8,
+                    crossAxisSpacing: 12, // Reduced spacing
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.85, // Slightly adjusted aspect ratio
                   ),
                   itemCount: services.length,
                   itemBuilder:

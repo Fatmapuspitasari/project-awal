@@ -60,7 +60,7 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
     showDialog(
       context: context,
       builder:
-          (_) => Dialog(
+          (context) => Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -138,7 +138,7 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
     showDialog(
       context: context,
       builder:
-          (_) => AlertDialog(
+          (context) => AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -396,8 +396,9 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -413,52 +414,49 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                 child: Image.asset(
                   imagePath,
                   width: double.infinity,
-                  height: 100,
+                  height: 180,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             // Detail kategori dan tipe layanan
             Text(
               '${item['category']}',
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 16,
                 color: Colors.blueAccent,
                 fontWeight: FontWeight.w600,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Text(
               '${item['type']}',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Text(
               'Rp ${item['price']}',
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 18,
                 color: Color(0xFF2C7EF8),
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.blue.shade200),
               ),
               child: const Text(
                 '🧼 Bayar saat pickup • 1-3 hari kerja',
-                style: TextStyle(fontSize: 10, color: Colors.blue),
-                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14, color: Colors.blue),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             // Kontrol jumlah barang
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -467,88 +465,96 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        if (quantity > 1)
+                        if (quantity > 1) {
                           setState(() => quantities[id] = quantity - 1);
+                        }
                       },
-                      icon: const Icon(Icons.remove_circle_outline, size: 20),
+                      icon: const Icon(Icons.remove_circle_outline, size: 28),
                     ),
-                    Text('$quantity'),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        '$quantity',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                     IconButton(
                       onPressed:
                           () => setState(() => quantities[id] = quantity + 1),
-                      icon: const Icon(Icons.add_circle_outline, size: 20),
+                      icon: const Icon(Icons.add_circle_outline, size: 28),
                     ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            // Baris Total harga dan tombol pemesanan
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
                 Text(
-                  'Rp $total',
+                  'Total: Rp $total',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed:
-                      (isBooked || _isLoading)
-                          ? null
-                          : () => _confirmBooking(
-                            id,
-                            item['type'],
-                            item['category'],
-                            total,
-                            quantity,
-                          ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isBooked
-                            ? Colors.grey.shade300
-                            : const Color(0xFF2C7EF8),
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (_isLoading)
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      else
-                        Icon(
-                          Icons.shopping_cart,
-                          size: 16,
-                          color: isBooked ? Colors.grey : Colors.white,
-                        ),
-                      const SizedBox(width: 6),
-                      Text(
-                        _isLoading
-                            ? 'Proses...'
-                            : (isBooked ? 'Dipesan' : 'Pesan'),
-                        style: TextStyle(
-                          color: isBooked ? Colors.grey : Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                    fontSize: 16,
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            // Tombol pemesanan
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed:
+                    (isBooked || _isLoading)
+                        ? null
+                        : () => _confirmBooking(
+                          id,
+                          item['type'],
+                          item['category'],
+                          total,
+                          quantity,
+                        ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isBooked ? Colors.grey.shade300 : const Color(0xFF2C7EF8),
+                  disabledBackgroundColor: Colors.grey.shade300,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (_isLoading)
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.shopping_cart,
+                        size: 20,
+                        color: isBooked ? Colors.grey : Colors.white,
+                      ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _isLoading
+                          ? 'Memproses...'
+                          : (isBooked ? 'Sudah Dipesan' : 'Pesan Sekarang'),
+                      style: TextStyle(
+                        color: isBooked ? Colors.grey : Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -566,18 +572,10 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        child: GridView.builder(
-          itemCount: priceList.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.72,
-          ),
-          itemBuilder: (context, index) => _buildItemCard(priceList[index]),
-        ),
+      body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        itemCount: priceList.length,
+        itemBuilder: (context, index) => _buildItemCard(priceList[index]),
       ),
     );
   }

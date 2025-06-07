@@ -403,10 +403,10 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -420,65 +420,63 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
                   ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Container(
+                child: Image.asset(
+                  service['imagePath'],
                   width: double.infinity,
-                  height: 120,
-                  child: Image.asset(service['imagePath'], fit: BoxFit.cover),
+                  height: 160,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
-            // Title
+            // Title and price section
             Text(
               service['title'],
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              maxLines: 2,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                height: 1.3,
+              ),
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
-
-            // Description
-            Text(
-              service['description'],
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 6),
-
-            // Price
+            const SizedBox(height: 8),
             Text(
               service['priceRange'],
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 18,
                 color: Color(0xFF2C7EF8),
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 6),
-
-            // Info badge
+            const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: Colors.orange.shade200),
               ),
               child: const Text(
-                '🔧 50% dimuka • 30 hari',
-                style: TextStyle(fontSize: 8, color: Colors.orange),
+                '🔧 50% dimuka • Garansi 30 hari',
+                style: TextStyle(fontSize: 12, color: Colors.orange),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
+            const Divider(height: 1, thickness: 1, color: Colors.grey),
+            const SizedBox(height: 16),
 
-            // Quantity controls
+            // Quantity section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Jumlah', style: TextStyle(fontSize: 12)),
+                const Text(
+                  'Jumlah',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -486,49 +484,58 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
                           setState(() => quantities[id] = quantity - 1);
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(4),
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Icon(Icons.remove, size: 16),
+                        child: const Icon(Icons.remove, size: 18),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text('$quantity', style: TextStyle(fontSize: 12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        '$quantity',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     GestureDetector(
                       onTap:
                           () => setState(() => quantities[id] = quantity + 1),
                       child: Container(
-                        padding: const EdgeInsets.all(4),
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Icon(Icons.add, size: 16),
+                        child: const Icon(Icons.add, size: 18),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
-            // Total price
             Text(
               'Total: Rp ${_formatCurrency(total)}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color(0xFF2C7EF8),
+              ),
             ),
-            const SizedBox(height: 8),
-
-            // Order button
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed:
-                    isBooked
+                    (isBooked || isLoading)
                         ? null
                         : () => _confirmBooking(
                           id,
@@ -542,24 +549,39 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
                       isBooked ? Colors.grey.shade300 : const Color(0xFF2C7EF8),
                   disabledBackgroundColor: Colors.grey.shade300,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.shopping_cart,
-                      color: isBooked ? Colors.grey : Colors.white,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
+                    if (isLoading)
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.shopping_cart,
+                        color: isBooked ? Colors.grey : Colors.white,
+                        size: 18,
+                      ),
+                    const SizedBox(width: 8),
                     Text(
-                      isBooked ? 'Dipesan' : 'Pesan',
+                      isLoading
+                          ? 'Proses...'
+                          : (isBooked ? 'Dipesan' : 'Pesan'),
                       style: TextStyle(
                         color: isBooked ? Colors.grey : Colors.white,
-                        fontSize: 12,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -582,6 +604,15 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+              );
+            },
+          ),
           // Login button for users who are not logged in
           if (!_supabaseService.isLoggedIn)
             TextButton(
@@ -593,19 +624,11 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
             ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.65,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-          ),
-          itemCount: repairServices.length,
-          itemBuilder:
-              (context, index) => _buildServiceCard(repairServices[index]),
-        ),
+      body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: repairServices.length,
+        itemBuilder:
+            (context, index) => _buildServiceCard(repairServices[index]),
       ),
     );
   }
