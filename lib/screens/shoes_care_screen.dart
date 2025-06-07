@@ -27,7 +27,8 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
       'price': 30000,
     },
     {
-      'title': 'Refill Pembersih Sepatu - Shicon Segen Cleaner Shoes 1 Liter + Parfum',
+      'title':
+          'Refill Pembersih Sepatu - Shicon Segen Cleaner Shoes 1 Liter + Parfum',
       'image': 'assets/images/refill1lt.jpeg',
       'price': 60000,
     },
@@ -48,45 +49,53 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
     'Transfer Bank (BCA, Mandiri, BRI)',
     'E-Wallet (GoPay, OVO, DANA)',
     'QRIS',
-    'Kartu Kredit/Debit'
+    'Kartu Kredit/Debit',
   ];
 
   void _showImageDialog(BuildContext context, String imagePath, String title) {
     showDialog(
       context: context,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Image.asset(imagePath, fit: BoxFit.cover),
+      builder:
+          (_) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   Future<void> _saveOrderToDatabase(Map<String, dynamic> orderData) async {
     try {
       final supabaseService = SupabaseService.instance;
-      
+
       // Check if user is logged in
       if (!supabaseService.isLoggedIn) {
         throw Exception('Silakan login terlebih dahulu');
       }
 
       final userId = supabaseService.currentUser!.id;
-      
+
       // Prepare order data for database
       final dbOrderData = {
         'user_id': userId,
@@ -106,9 +115,7 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
       };
 
       // Insert into database
-      await supabaseService.client
-          .from('orders')
-          .insert(dbOrderData);
+      await supabaseService.client.from('orders').insert(dbOrderData);
 
       print('Order saved to database successfully');
     } catch (e) {
@@ -122,173 +129,226 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: const Color(0xFFE8EAF0),
-        title: const Text('Konfirmasi Pesanan'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Pesan "$title"'),
-              const SizedBox(height: 8),
-              Text('Jumlah: $quantity'),
-              const SizedBox(height: 4),
-              Text('Total: Rp $total',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(height: 16),
-              const Text('Metode Pembayaran:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedPaymentMethod,
-                    isExpanded: true,
-                    items: paymentMethods.map((String method) {
-                      return DropdownMenuItem<String>(
-                        value: method,
-                        child: Text(method, style: const TextStyle(fontSize: 14)),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedPaymentMethod = newValue!;
-                      });
-                    },
+      builder:
+          (_) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            backgroundColor: const Color(0xFFE8EAF0),
+            title: const Text('Konfirmasi Pesanan'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Pesan "$title"'),
+                  const SizedBox(height: 8),
+                  Text('Jumlah: $quantity'),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Total: Rp $total',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Metode Pembayaran:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedPaymentMethod,
+                        isExpanded: true,
+                        items:
+                            paymentMethods.map((String method) {
+                              return DropdownMenuItem<String>(
+                                value: method,
+                                child: Text(
+                                  method,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              );
+                            }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedPaymentMethod = newValue!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade200),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '💳 Info Pembayaran & Layanan:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          '• Pembayaran dapat dilakukan saat pengambilan',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        Text(
+                          '• Transfer: Konfirmasi bukti transfer via WhatsApp',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        Text(
+                          '• E-Wallet & QRIS: Scan QR code saat pickup',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        Text(
+                          '• Produk ready stock, bisa langsung diambil',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        Text(
+                          '• Konsultasi penggunaan produk gratis',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade200),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('💳 Info Pembayaran & Layanan:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                    SizedBox(height: 4),
-                    Text('• Pembayaran dapat dilakukan saat pengambilan',
-                        style: TextStyle(fontSize: 11)),
-                    Text('• Transfer: Konfirmasi bukti transfer via WhatsApp',
-                        style: TextStyle(fontSize: 11)),
-                    Text('• E-Wallet & QRIS: Scan QR code saat pickup',
-                        style: TextStyle(fontSize: 11)),
-                    Text('• Produk ready stock, bisa langsung diambil',
-                        style: TextStyle(fontSize: 11)),
-                    Text('• Konsultasi penggunaan produk gratis',
-                        style: TextStyle(fontSize: 11)),
-                  ],
-                ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Batal'),
+              ),
+              TextButton(
+                onPressed:
+                    _isLoading
+                        ? null
+                        : () async {
+                          setState(() {
+                            _isLoading = true;
+                          });
+
+                          try {
+                            // Calculate unit price
+                            final unitPrice = price;
+
+                            // Prepare order data
+                            final orderData = {
+                              'title': title,
+                              'serviceType': 'Shoes Care',
+                              'quantity': quantity,
+                              'unitPrice': unitPrice,
+                              'totalPrice': total,
+                              'paymentMethod': selectedPaymentMethod,
+                              'orderDate': _getCurrentDate(),
+                              'paymentStatus': 'Belum Dibayar',
+                              'serviceStatus': 'Dikonfirmasi',
+                              'paymentInfo': _getPaymentInfo(
+                                selectedPaymentMethod,
+                              ),
+                            };
+
+                            // Save to database
+                            await _saveOrderToDatabase(orderData);
+
+                            // Update local state
+                            setState(() {
+                              confirmedItems.add(title);
+                            });
+
+                            // Add order to history (existing functionality)
+                            HistoryScreen.addOrder(orderData);
+
+                            Navigator.of(context).pop();
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Pesanan berhasil disimpan: $title x$quantity\nPembayaran: $selectedPaymentMethod',
+                                ),
+                                duration: const Duration(seconds: 4),
+                                backgroundColor: Colors.green,
+                                action: SnackBarAction(
+                                  label: 'Lihat Riwayat',
+                                  textColor: Colors.white,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const HistoryScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            Navigator.of(context).pop();
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Gagal menyimpan pesanan: ${SupabaseService.instance.getErrorMessage(e)}',
+                                ),
+                                duration: const Duration(seconds: 4),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } finally {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
+                        },
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Text('Konfirmasi'),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: _isLoading ? null : () async {
-              setState(() {
-                _isLoading = true;
-              });
-
-              try {
-                // Calculate unit price
-                final unitPrice = price;
-                
-                // Prepare order data
-                final orderData = {
-                  'title': title,
-                  'serviceType': 'Shoes Care',
-                  'quantity': quantity,
-                  'unitPrice': unitPrice,
-                  'totalPrice': total,
-                  'paymentMethod': selectedPaymentMethod,
-                  'orderDate': _getCurrentDate(),
-                  'paymentStatus': 'Belum Dibayar',
-                  'serviceStatus': 'Dikonfirmasi',
-                  'paymentInfo': _getPaymentInfo(selectedPaymentMethod),
-                };
-
-                // Save to database
-                await _saveOrderToDatabase(orderData);
-
-                // Update local state
-                setState(() {
-                  confirmedItems.add(title);
-                });
-
-                // Add order to history (existing functionality)
-                HistoryScreen.addOrder(orderData);
-
-                Navigator.of(context).pop();
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Pesanan berhasil disimpan: $title x$quantity\nPembayaran: $selectedPaymentMethod'),
-                    duration: const Duration(seconds: 4),
-                    backgroundColor: Colors.green,
-                    action: SnackBarAction(
-                      label: 'Lihat Riwayat',
-                      textColor: Colors.white,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HistoryScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                );
-              } catch (e) {
-                Navigator.of(context).pop();
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Gagal menyimpan pesanan: ${SupabaseService.instance.getErrorMessage(e)}'),
-                    duration: const Duration(seconds: 4),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              } finally {
-                setState(() {
-                  _isLoading = false;
-                });
-              }
-            },
-            child: _isLoading 
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Konfirmasi'),
-          ),
-        ],
-      ),
     );
   }
 
   String _getCurrentDate() {
     final now = DateTime.now();
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Ags',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return '${now.day} ${months[now.month - 1]} ${now.year}';
   }
@@ -316,7 +376,7 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      margin: const EdgeInsets.all(6),
       elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -325,109 +385,157 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
           children: [
             GestureDetector(
               onTap: () => _showImageDialog(context, item['image'], title),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      item['image'],
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 6),
-                        Text('Rp ${item['price']}',
-                            style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF2C7EF8),
-                                fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade50,
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: Colors.green.shade200),
-                          ),
-                          child: const Text('💳 Bayar saat pickup • Ready stock',
-                              style: TextStyle(fontSize: 10, color: Colors.green)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  item['image'],
+                  width: double.infinity,
+                  height: 110,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-            const Divider(height: 20, thickness: 1, color: Colors.grey),
+            const SizedBox(height: 12),
+
+            // Title and price section
+            Text(
+              title,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Rp ${item['price']}',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF2C7EF8),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: Colors.green.shade200),
+              ),
+              child: const Text(
+                '💳 Ready stock',
+                style: TextStyle(fontSize: 9, color: Colors.green),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Divider(height: 1, thickness: 1, color: Colors.grey),
+            const SizedBox(height: 8),
+
+            // Quantity section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Jumlah', style: TextStyle(fontSize: 14)),
+                const Text('Jumlah', style: TextStyle(fontSize: 12)),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      onPressed: () {
-                        if (quantity > 1) setState(() => quantities[title] = quantity - 1);
+                    GestureDetector(
+                      onTap: () {
+                        if (quantity > 1)
+                          setState(() => quantities[title] = quantity - 1);
                       },
-                      icon: const Icon(Icons.remove_circle_outline),
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.remove, size: 16),
+                      ),
                     ),
-                    Text('$quantity'),
-                    IconButton(
-                      onPressed: () => setState(() => quantities[title] = quantity + 1),
-                      icon: const Icon(Icons.add_circle_outline),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        '$quantity',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap:
+                          () =>
+                              setState(() => quantities[title] = quantity + 1),
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.add, size: 16),
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Total: Rp $total',
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                ElevatedButton(
-                  onPressed: (isConfirmed || _isLoading)
-                      ? null
-                      : () => _confirmOrder(title, item['price'], quantity),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isConfirmed ? Colors.grey.shade300 : const Color(0xFF2C7EF8),
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+
+            Text(
+              'Total: Rp $total',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed:
+                    (isConfirmed || _isLoading)
+                        ? null
+                        : () => _confirmOrder(title, item['price'], quantity),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isConfirmed
+                          ? Colors.grey.shade300
+                          : const Color(0xFF2C7EF8),
+                  disabledBackgroundColor: Colors.grey.shade300,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (_isLoading) 
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      else
-                        Icon(Icons.shopping_cart, color: isConfirmed ? Colors.grey : Colors.white),
-                      const SizedBox(width: 6),
-                      Text(
-                        _isLoading ? 'Proses...' : (isConfirmed ? 'Dipesan' : 'Pesan'),
-                        style: TextStyle(color: isConfirmed ? Colors.grey : Colors.white),
-                      ),
-                    ],
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_isLoading)
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.shopping_cart,
+                        color: isConfirmed ? Colors.grey : Colors.white,
+                        size: 16,
+                      ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _isLoading
+                          ? 'Proses...'
+                          : (isConfirmed ? 'Dipesan' : 'Pesan'),
+                      style: TextStyle(
+                        color: isConfirmed ? Colors.grey : Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -450,17 +558,24 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const HistoryScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
               );
             },
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: careItems.length,
-        itemBuilder: (context, index) => _buildCareCard(careItems[index]),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.65,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+          ),
+          itemCount: careItems.length,
+          itemBuilder: (context, index) => _buildCareCard(careItems[index]),
+        ),
       ),
     );
   }

@@ -37,10 +37,6 @@ class BantuanScreen extends StatelessWidget {
               'Bagaimana mengaktifkan notifikasi?',
               'Pastikan toggle notifikasi aktif di menu pengaturan notifikasi.',
             ),
-            _buildFaqItem(
-              'Bagaimana cara memilih bahasa?',
-              'Pilih bahasa di menu pengaturan bahasa sesuai preferensi kamu.',
-            ),
             const SizedBox(height: 24),
             const Text(
               'Kontak Layanan Pelanggan:',
@@ -52,7 +48,7 @@ class BantuanScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Email: @gmail.com\nTelepon: 021-12345678',
+              'Email: ardefva@gmail.com\nTelepon: 021-12345678',
               style: const TextStyle(fontSize: 16),
             ),
           ],

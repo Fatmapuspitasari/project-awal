@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_awal/screens/home_screen.dart';
 import 'package:project_awal/screens/history_screen.dart';
-import 'package:project_awal/screens/promo_screen.dart';
+import 'package:project_awal/screens/store_screen.dart';
 import 'package:project_awal/screens/profile_2_screen.dart';
 import 'package:project_awal/widget/custom_bottom_label.dart';
 import 'package:project_awal/widget/custom_bottom_nav_bar.dart';
@@ -14,7 +14,8 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateMixin {
+class _MainScreenState extends State<MainScreen>
+    with SingleTickerProviderStateMixin {
   late int currentIndex;
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -23,8 +24,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   final List<Widget> _pages = const [
     HomeScreen(),
     HistoryScreen(),
-    PromoScreen(),
-    ProfileScreen()
+    StoreScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -38,9 +39,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 300),
     );
 
-    _animation = Tween<double>(begin: 1.0, end: 1.2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _pageController = PageController(initialPage: currentIndex);
   }

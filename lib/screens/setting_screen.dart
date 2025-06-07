@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../theme_control.dart';
-
-// Pastikan semua halaman ini sudah dibuat dan class-nya benar
-import 'informasi_akun_screen.dart';
-import 'ubah_password_screen.dart';
+import 'edit_profil_screen.dart';
 import 'tentangkami_screen.dart';
 import 'syarat_ketentuan_screen.dart';
 
@@ -46,26 +43,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           _buildSection("Akun", [
             _tile(
-              Icons.manage_accounts,
-              'Informasi Akun',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const InformasiAkunScreen(),
-                  ),
-                );
-              },
-            ),
-            _tile(
-              Icons.lock,
-              'Ubah Password',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const UbahPasswordScreen()),
-                );
-              },
+              Icons.edit,
+              'Edit Profil',
+              onTap: () => Get.to(() => const EditProfileScreen()),
             ),
           ]),
           _buildSection("Tampilan", [

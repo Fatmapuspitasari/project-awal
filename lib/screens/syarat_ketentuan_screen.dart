@@ -14,18 +14,20 @@ class SyaratKetentuanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.grey[100],
       appBar: AppBar(
         title: const Text(
           'Syarat dan Ketentuan',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black87,
         elevation: 2,
-        shadowColor: Colors.black26,
+        shadowColor: isDarkMode ? Colors.black54 : Colors.black26,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -34,7 +36,7 @@ class SyaratKetentuanScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          color: Colors.white,
+          color: isDarkMode ? Colors.grey[800] : Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -45,7 +47,7 @@ class SyaratKetentuanScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.blueGrey[800],
+                    color: isDarkMode ? Colors.grey[200] : Colors.blueGrey[800],
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -53,7 +55,7 @@ class SyaratKetentuanScreen extends StatelessWidget {
                   'Berikut adalah syarat dan ketentuan penggunaan aplikasi Ardefa Shoes Care. Dengan menggunakan aplikasi ini, Anda setuju untuk mematuhi semua syarat berikut:',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[700],
+                    color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
                     height: 1.4,
                   ),
                 ),
@@ -66,16 +68,26 @@ class SyaratKetentuanScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               "• ",
-                              style: TextStyle(fontSize: 20, height: 1.4),
+                              style: TextStyle(
+                                fontSize: 20,
+                                height: 1.4,
+                                color:
+                                    isDarkMode
+                                        ? Colors.grey[300]
+                                        : Colors.grey[800],
+                              ),
                             ),
                             Expanded(
                               child: Text(
                                 line.trim(),
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey[800],
+                                  color:
+                                      isDarkMode
+                                          ? Colors.grey[300]
+                                          : Colors.grey[800],
                                   height: 1.4,
                                 ),
                               ),

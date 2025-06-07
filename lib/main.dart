@@ -8,16 +8,17 @@ import 'screens/supabase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await GetStorage.init();
-  
+
   await Supabase.initialize(
     url: 'https://uuwcqaywksbgrhoumkae.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2NxYXl3a3NiZ3Job3Vta2FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjUyMzEsImV4cCI6MjA2MzI0MTIzMX0.ckc8o2A8ormTQOX2gVfwlOc0CRVp6aiejAEECrhiULc',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2NxYXl3a3NiZ3Job3Vta2FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjUyMzEsImV4cCI6MjA2MzI0MTIzMX0.ckc8o2A8ormTQOX2gVfwlOc0CRVp6aiejAEECrhiULc',
   );
-  
+
   await SupabaseService.init();
-  
+
   runApp(const MyApp());
 }
 
