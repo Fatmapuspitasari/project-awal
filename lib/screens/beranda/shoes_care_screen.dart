@@ -288,9 +288,10 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                                 duration: const Duration(seconds: 4),
                                 backgroundColor: Colors.green,
                                 action: SnackBarAction(
-                                  label: 'Lihat Riwayat',
+                                  label: '',
                                   textColor: Colors.white,
                                   onPressed: () {
+                                    if (!mounted) return;
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(

@@ -8,7 +8,6 @@ class EditProfileService extends GetxService {
   SupabaseClient get _client => _supabaseService.client;
   User? get _currentUser => _supabaseService.currentUser;
 
-  /// Mendapatkan profil user saat ini
   Future<Map<String, dynamic>?> getCurrentProfile() async {
     try {
       if (_currentUser == null) {
@@ -32,7 +31,6 @@ class EditProfileService extends GetxService {
     }
   }
 
-  /// Mengecek apakah username sudah digunakan oleh user lain
   Future<bool> isUsernameAvailable(
     String username, {
     String? excludeUserId,
@@ -43,7 +41,6 @@ class EditProfileService extends GetxService {
           .select('id')
           .eq('username', username);
 
-      // Exclude current user's ID when checking
       if (excludeUserId != null) {
         query.neq('id', excludeUserId);
       }
@@ -59,15 +56,9 @@ class EditProfileService extends GetxService {
     }
   }
 
-  /// Mengecek apakah email sudah digunakan oleh user lain
   Future<bool> isEmailAvailable(String email, {String? excludeUserId}) async {
     try {
       final query = _client.auth.admin.listUsers();
-      // Note: Untuk production, sebaiknya menggunakan API khusus untuk cek email
-      // Karena admin API memerlukan service role key
-
-      // Alternatif: bisa menggunakan function di Supabase atau
-      // mengandalkan error handling saat update email
       return true; // Return true untuk sementara
     } catch (e) {
       print('Error checking email availability: $e');

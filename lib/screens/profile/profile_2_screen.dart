@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'package:project_awal/screens/login/login_2_screen.dart';
 import 'bantuan_screen.dart';
 import 'tentangkami_screen.dart';
@@ -18,16 +22,18 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final box = GetStorage();
-  late String username;
-  late String email;
+  final ImagePicker _picker = ImagePicker();
+
+  String username = 'User'; // Ini akan berisi nama lengkap/display name
+  String email = 'user@email.com';
+  String? profileImagePath;
 
   SupabaseService get _supabase => Get.put(SupabaseService());
 
   @override
   void initState() {
     super.initState();
-    username = box.read('username') ?? 'User';
-    email = box.read('email') ?? '$username@email.com';
+    _loadProfileData();
 
     // Initialize theme
     bool storedDarkMode = box.read('dark_mode_enabled') ?? false;
@@ -35,6 +41,248 @@ class _ProfileScreenState extends State<ProfileScreen> {
       themeController.isDarkMode.value = storedDarkMode;
       Get.changeThemeMode(storedDarkMode ? ThemeMode.dark : ThemeMode.light);
     });
+  }
+
+  void _loadProfileData() {
+    setState(() {
+      // Username sekarang adalah display name (full_name dari edit profile)
+      username = box.read('username') ?? 'User';
+      email = box.read('email') ?? 'user@email.com';
+      profileImagePath = box.read('profile_image_path');
+    });
+  }
+
+  // Method untuk refresh profil ketika kembali dari edit
+  void _refreshProfile() {
+    _loadProfileData();
+  }
+
+  // Method untuk memilih sumber gambar
+  Future<void> _showImageSourceDialog() async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Pilih Foto Profil',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildImageSourceOption(
+                      icon: Icons.camera_alt,
+                      label: 'Kamera',
+                      onTap: () {
+                        Navigator.pop(context);
+                        _pickImage(ImageSource.camera);
+                      },
+                    ),
+                    _buildImageSourceOption(
+                      icon: Icons.photo_library,
+                      label: 'Galeri',
+                      onTap: () {
+                        Navigator.pop(context);
+                        _pickImage(ImageSource.gallery);
+                      },
+                    ),
+                    if (profileImagePath != null)
+                      _buildImageSourceOption(
+                        icon: Icons.delete,
+                        label: 'Hapus',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _removeProfileImage();
+                        },
+                        color: Colors.red,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+    );
+  }
+
+  Widget _buildImageSourceOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: (color ?? theme.primaryColor).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Icon(icon, color: color ?? theme.primaryColor, size: 30),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Method untuk mengambil gambar
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      // Request permissions
+      if (source == ImageSource.camera) {
+        final cameraStatus = await Permission.camera.request();
+        if (cameraStatus.isDenied) {
+          _showPermissionDeniedDialog('Kamera');
+          return;
+        }
+      } else {
+        final storageStatus = await Permission.photos.request();
+        if (storageStatus.isDenied) {
+          _showPermissionDeniedDialog('Galeri');
+          return;
+        }
+      }
+
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 80,
+      );
+
+      if (image != null) {
+        // Save image to app directory
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final savedImage = File('${appDir.path}/$fileName');
+
+        await File(image.path).copy(savedImage.path);
+
+        // Delete old profile image if exists
+        if (profileImagePath != null) {
+          final oldFile = File(profileImagePath!);
+          if (await oldFile.exists()) {
+            await oldFile.delete();
+          }
+        }
+
+        // Save new image path
+        setState(() {
+          profileImagePath = savedImage.path;
+        });
+
+        box.write('profile_image_path', profileImagePath);
+
+        Get.snackbar(
+          'Berhasil',
+          'Foto profil berhasil diperbarui',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal mengambil gambar: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
+  // Method untuk menghapus foto profil
+  Future<void> _removeProfileImage() async {
+    try {
+      if (profileImagePath != null) {
+        final file = File(profileImagePath!);
+        if (await file.exists()) {
+          await file.delete();
+        }
+
+        setState(() {
+          profileImagePath = null;
+        });
+
+        box.remove('profile_image_path');
+
+        Get.snackbar(
+          'Berhasil',
+          'Foto profil berhasil dihapus',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menghapus foto profil: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
+  void _showPermissionDeniedDialog(String permission) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Izin $permission Diperlukan'),
+            content: Text(
+              'Aplikasi memerlukan akses $permission untuk mengambil foto profil. Silakan berikan izin di pengaturan aplikasi.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+                child: const Text('Pengaturan'),
+              ),
+            ],
+          ),
+    );
   }
 
   void logout(BuildContext context) {
@@ -126,19 +374,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundColor:
-                        theme.brightness == Brightness.dark
-                            ? Colors.grey[700]
-                            : Colors.grey[300],
-                    child: Icon(
-                      Icons.person,
-                      size: 45,
-                      color: theme.iconTheme.color?.withOpacity(0.7),
-                    ),
+                  // Profile Image with Edit Button
+                  Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: _showImageSourceDialog,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: theme.primaryColor.withOpacity(0.3),
+                              width: 3,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: 45,
+                            backgroundColor:
+                                theme.brightness == Brightness.dark
+                                    ? Colors.grey[700]
+                                    : Colors.grey[300],
+                            backgroundImage:
+                                profileImagePath != null
+                                    ? FileImage(File(profileImagePath!))
+                                    : null,
+                            child:
+                                profileImagePath == null
+                                    ? Icon(
+                                      Icons.person,
+                                      size: 45,
+                                      color: theme.iconTheme.color?.withOpacity(
+                                        0.7,
+                                      ),
+                                    )
+                                    : null,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _showImageSourceDialog,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: theme.primaryColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: theme.cardColor,
+                                width: 2,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
+
+                  // Display Name - Sekarang hanya menampilkan username (yang sudah berisi nama lengkap)
                   Text(
                     username,
                     style: textTheme.titleLarge?.copyWith(
@@ -147,6 +446,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
+
+                  // Email
                   Text(
                     email,
                     style: textTheme.bodyMedium?.copyWith(
@@ -168,7 +469,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         icon: Icons.edit,
                         title: "Informasi Akun",
                         subtitle: "Kelola informasi profil Anda",
-                        onTap: () => Get.to(() => const EditProfileScreen()),
+                        onTap: () async {
+                          // Navigate to edit profile dan tunggu hasil
+                          await Get.to(() => const EditProfileScreen());
+                          // Refresh profil setelah kembali dari edit
+                          _refreshProfile();
+                        },
                         theme: theme,
                       ),
                       _buildSwitchOption(

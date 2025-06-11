@@ -17,7 +17,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final EditProfileService _editProfileService = Get.put(EditProfileService());
 
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _currentPasswordController =
@@ -41,6 +40,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Register SupabaseService jika belum ada
+    if (!Get.isRegistered<SupabaseService>()) {
+      Get.put(SupabaseService());
+    }
+
     _loadCurrentProfile();
   }
 
@@ -52,20 +57,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (profile != null) {
         setState(() {
           _currentProfile = profile;
-          _originalUsername = profile['username'];
-          _usernameController.text = profile['username'] ?? '';
-          _fullNameController.text = profile['full_name'] ?? '';
+          _originalUsername = profile['full_name'];
+          _usernameController.text = profile['full_name'] ?? '';
           _phoneController.text = profile['phone_number'] ?? '';
 
-          // Get email from current user
-          final supabaseService = Get.find<SupabaseService>();
-          _originalEmail = supabaseService.currentUser?.email ?? '';
+          // Get email from current user - akses langsung ke Supabase
+          _originalEmail =
+              Supabase.instance.client.auth.currentUser?.email ?? '';
           _emailController.text = _originalEmail ?? '';
         });
 
-        // Update local storage
-        box.write('username', profile['username']);
-        box.write('full_name', profile['full_name']);
+        // Update local storage to match profile screen format
+        box.write(
+          'username',
+          profile['full_name'],
+        ); // Store as username for profile screen
         box.write('phone', profile['phone_number']);
         box.write('email', _originalEmail);
       }
@@ -74,7 +80,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       // Fallback to local storage if database fails
       _usernameController.text = box.read('username') ?? '';
-      _fullNameController.text = box.read('full_name') ?? '';
       _phoneController.text = box.read('phone') ?? '';
       _emailController.text = box.read('email') ?? '';
     } finally {
@@ -89,14 +94,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     try {
       final username = _usernameController.text.trim();
-      final fullName = _fullNameController.text.trim();
       final phone = _phoneController.text.trim();
       final newEmail = _emailController.text.trim();
 
       // Validate data before submitting
       final validationErrors = _editProfileService.validateProfileData(
         username: username,
-        fullName: fullName,
+        fullName: username,
         phoneNumber: phone.isNotEmpty ? phone : null,
         email: newEmail,
         newPassword:
@@ -113,8 +117,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       // Use complete profile update method
       await _editProfileService.updateCompleteProfile(
-        username: username != _originalUsername ? username : null,
-        fullName: fullName,
+        username: username,
+        fullName: username,
         phoneNumber: phone.isNotEmpty ? phone : null,
         newEmail: newEmail != _originalEmail ? newEmail : null,
         currentPassword:
@@ -127,11 +131,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 : null,
       );
 
-      // Update local storage
-      box.write('username', username);
-      box.write('full_name', fullName);
+      // Update local storage to match profile screen expectations
+      box.write(
+        'username',
+        username,
+      ); // Profile screen reads this as display name
       box.write('phone', phone);
-      if (newEmail == _originalEmail) {
+      if (newEmail != _originalEmail) {
+        // Only update email in storage if it's the same (not changed)
+        // If changed, wait for email confirmation
+      } else {
         box.write('email', newEmail);
       }
 
@@ -209,7 +218,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void dispose() {
     _usernameController.dispose();
-    _fullNameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
     _currentPasswordController.dispose();
@@ -220,12 +228,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Edit Profil'),
-        backgroundColor: Colors.blue[500],
+        backgroundColor: theme.primaryColor,
         foregroundColor: Colors.white,
         elevation: 1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
       ),
       body:
           _isLoading
@@ -240,181 +255,187 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 20),
 
                       // Profile Info Section
-                      _buildSectionHeader('Informasi Profil'),
-                      const SizedBox(height: 16),
-
-                      _buildFormField(
-                        controller: _usernameController,
-                        icon: Icons.person,
-                        label: 'Username',
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Username tidak boleh kosong';
-                          }
-                          if (value.length < 3) {
-                            return 'Username minimal 3 karakter';
-                          }
-                          if (value.length > 30) {
-                            return 'Username maksimal 30 karakter';
-                          }
-                          if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
-                            return 'Username hanya boleh mengandung huruf, angka, dan underscore';
-                          }
-                          return null;
-                        },
+                      _buildSectionCard(
+                        title: 'Informasi Profil',
+                        children: [
+                          _buildFormField(
+                            controller: _usernameController,
+                            icon: Icons.person,
+                            label: 'Nama Lengkap',
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Nama lengkap tidak boleh kosong';
+                              }
+                              if (value.length < 3) {
+                                return 'Nama lengkap minimal 3 karakter';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildFormField(
+                            controller: _phoneController,
+                            icon: Icons.phone,
+                            label: 'Nomor Telepon (Opsional)',
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value != null && value.isNotEmpty) {
+                                if (!RegExp(
+                                  r'^\+?[0-9]{10,15}$',
+                                ).hasMatch(value)) {
+                                  return 'Format nomor telepon tidak valid';
+                                }
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
 
-                      _buildFormField(
-                        controller: _fullNameController,
-                        icon: Icons.badge,
-                        label: 'Nama Lengkap',
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Nama lengkap tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      _buildFormField(
-                        controller: _phoneController,
-                        icon: Icons.phone,
-                        label: 'Nomor Telepon (Opsional)',
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            if (!RegExp(r'^\+?[0-9]{10,15}$').hasMatch(value)) {
-                              return 'Format nomor telepon tidak valid';
-                            }
-                          }
-                          return null;
-                        },
-                      ),
                       const SizedBox(height: 24),
 
                       // Account Security Section
-                      _buildSectionHeader('Keamanan Akun'),
-                      const SizedBox(height: 16),
-
-                      _buildFormField(
-                        controller: _emailController,
-                        icon: Icons.email,
-                        label: 'Email',
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Email tidak boleh kosong';
-                          }
-                          if (!GetUtils.isEmail(value)) {
-                            return 'Format email tidak valid';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Change Password Toggle
-                      Card(
-                        elevation: 2,
-                        child: SwitchListTile(
-                          title: const Text(
-                            'Ubah Password',
-                            style: TextStyle(fontWeight: FontWeight.w500),
+                      _buildSectionCard(
+                        title: 'Keamanan Akun',
+                        children: [
+                          _buildFormField(
+                            controller: _emailController,
+                            icon: Icons.email,
+                            label: 'Email',
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Email tidak boleh kosong';
+                              }
+                              if (!GetUtils.isEmail(value)) {
+                                return 'Format email tidak valid';
+                              }
+                              return null;
+                            },
                           ),
-                          subtitle: const Text(
-                            'Aktifkan untuk mengubah password',
+                          const SizedBox(height: 16),
+
+                          // Change Password Toggle
+                          Card(
+                            elevation: 0,
+                            color:
+                                theme.brightness == Brightness.dark
+                                    ? Colors.grey[800]
+                                    : Colors.grey[50],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: theme.dividerColor.withOpacity(0.2),
+                              ),
+                            ),
+                            child: SwitchListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              title: Text(
+                                'Ubah Password',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'Aktifkan untuk mengubah password',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.hintColor,
+                                ),
+                              ),
+                              value: _isChangePasswordMode,
+                              activeColor: theme.primaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isChangePasswordMode = value;
+                                  if (!value) {
+                                    _currentPasswordController.clear();
+                                    _newPasswordController.clear();
+                                    _confirmPasswordController.clear();
+                                  }
+                                });
+                              },
+                            ),
                           ),
-                          value: _isChangePasswordMode,
-                          activeColor: Colors.blue,
-                          onChanged: (value) {
-                            setState(() {
-                              _isChangePasswordMode = value;
-                              if (!value) {
-                                _currentPasswordController.clear();
-                                _newPasswordController.clear();
-                                _confirmPasswordController.clear();
-                              }
-                            });
-                          },
-                        ),
+
+                          // Password Fields (if enabled)
+                          if (_isChangePasswordMode) ...[
+                            const SizedBox(height: 16),
+                            _buildPasswordField(
+                              controller: _currentPasswordController,
+                              label: 'Password Lama',
+                              obscureText: _obscureCurrentPassword,
+                              onToggleVisibility: () {
+                                setState(
+                                  () =>
+                                      _obscureCurrentPassword =
+                                          !_obscureCurrentPassword,
+                                );
+                              },
+                              validator: (value) {
+                                if (_isChangePasswordMode &&
+                                    (value == null || value.isEmpty)) {
+                                  return 'Password lama harus diisi';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            _buildPasswordField(
+                              controller: _newPasswordController,
+                              label: 'Password Baru',
+                              obscureText: _obscureNewPassword,
+                              onToggleVisibility: () {
+                                setState(
+                                  () =>
+                                      _obscureNewPassword =
+                                          !_obscureNewPassword,
+                                );
+                              },
+                              validator: (value) {
+                                if (_isChangePasswordMode) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password baru harus diisi';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password minimal 6 karakter';
+                                  }
+                                  if (value.length > 50) {
+                                    return 'Password maksimal 50 karakter';
+                                  }
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            _buildPasswordField(
+                              controller: _confirmPasswordController,
+                              label: 'Konfirmasi Password Baru',
+                              obscureText: _obscureConfirmPassword,
+                              onToggleVisibility: () {
+                                setState(
+                                  () =>
+                                      _obscureConfirmPassword =
+                                          !_obscureConfirmPassword,
+                                );
+                              },
+                              validator: (value) {
+                                if (_isChangePasswordMode) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Konfirmasi password harus diisi';
+                                  }
+                                  if (value != _newPasswordController.text) {
+                                    return 'Password tidak cocok';
+                                  }
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ],
                       ),
-
-                      // Password Fields (if enabled)
-                      if (_isChangePasswordMode) ...[
-                        const SizedBox(height: 16),
-                        _buildPasswordField(
-                          controller: _currentPasswordController,
-                          label: 'Password Lama',
-                          obscureText: _obscureCurrentPassword,
-                          onToggleVisibility: () {
-                            setState(
-                              () =>
-                                  _obscureCurrentPassword =
-                                      !_obscureCurrentPassword,
-                            );
-                          },
-                          validator: (value) {
-                            if (_isChangePasswordMode &&
-                                (value == null || value.isEmpty)) {
-                              return 'Password lama harus diisi';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        _buildPasswordField(
-                          controller: _newPasswordController,
-                          label: 'Password Baru',
-                          obscureText: _obscureNewPassword,
-                          onToggleVisibility: () {
-                            setState(
-                              () => _obscureNewPassword = !_obscureNewPassword,
-                            );
-                          },
-                          validator: (value) {
-                            if (_isChangePasswordMode) {
-                              if (value == null || value.isEmpty) {
-                                return 'Password baru harus diisi';
-                              }
-                              if (value.length < 6) {
-                                return 'Password minimal 6 karakter';
-                              }
-                              if (value.length > 50) {
-                                return 'Password maksimal 50 karakter';
-                              }
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        _buildPasswordField(
-                          controller: _confirmPasswordController,
-                          label: 'Konfirmasi Password Baru',
-                          obscureText: _obscureConfirmPassword,
-                          onToggleVisibility: () {
-                            setState(
-                              () =>
-                                  _obscureConfirmPassword =
-                                      !_obscureConfirmPassword,
-                            );
-                          },
-                          validator: (value) {
-                            if (_isChangePasswordMode) {
-                              if (value == null || value.isEmpty) {
-                                return 'Konfirmasi password harus diisi';
-                              }
-                              if (value != _newPasswordController.text) {
-                                return 'Password tidak cocok';
-                              }
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
 
                       const SizedBox(height: 40),
 
@@ -425,16 +446,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _saveProfile,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: theme.primaryColor,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 2,
+                            disabledBackgroundColor: theme.disabledColor,
                           ),
                           child:
                               _isLoading
-                                  ? const Row(
+                                  ? Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       SizedBox(
@@ -442,11 +464,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         height: 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          color: Colors.white,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                theme.brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.white,
+                                              ),
                                         ),
                                       ),
-                                      SizedBox(width: 12),
-                                      Text('Menyimpan...'),
+                                      const SizedBox(width: 12),
+                                      const Text('Menyimpan...'),
                                     ],
                                   )
                                   : const Text(
@@ -466,13 +494,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Colors.black87,
+  Widget _buildSectionCard({
+    required String title,
+    required List<Widget> children,
+  }) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: theme.cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ...children,
+          ],
+        ),
       ),
     );
   }
@@ -484,22 +531,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey[300]!),
+        color:
+            theme.brightness == Brightness.dark
+                ? Colors.grey[800]
+                : Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.2)),
       ),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         validator: validator,
+        style: theme.textTheme.bodyLarge,
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: Colors.blue),
+          prefixIcon: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: theme.primaryColor, size: 20),
+          ),
           labelText: label,
+          labelStyle: TextStyle(color: theme.hintColor),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(16),
-          errorStyle: const TextStyle(fontSize: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          errorStyle: TextStyle(fontSize: 12, color: theme.colorScheme.error),
         ),
       ),
     );
@@ -512,29 +577,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required VoidCallback onToggleVisibility,
     String? Function(String?)? validator,
   }) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey[300]!),
+        color:
+            theme.brightness == Brightness.dark
+                ? Colors.grey[800]
+                : Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.2)),
       ),
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
         validator: validator,
+        style: theme.textTheme.bodyLarge,
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.lock, color: Colors.blue),
+          prefixIcon: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.lock, color: theme.primaryColor, size: 20),
+          ),
           labelText: label,
+          labelStyle: TextStyle(color: theme.hintColor),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           suffixIcon: IconButton(
             icon: Icon(
-              obscureText ? Icons.visibility : Icons.visibility_off,
-              color: Colors.grey,
+              obscureText ? Icons.visibility_off : Icons.visibility,
+              color: theme.hintColor,
+              size: 20,
             ),
             onPressed: onToggleVisibility,
           ),
-          errorStyle: const TextStyle(fontSize: 12),
+          errorStyle: TextStyle(fontSize: 12, color: theme.colorScheme.error),
         ),
       ),
     );

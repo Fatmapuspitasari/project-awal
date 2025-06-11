@@ -297,6 +297,28 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
         serviceStatus: 'Dikonfirmasi',
       );
 
+      // **TAMBAHAN PENTING: Simpan ke History Screen**
+      final DateTime now = DateTime.now();
+      final String formattedDate = '${now.day}/${now.month}/${now.year}';
+
+      // Tambahkan ke history screen
+      HistoryScreen.addOrder({
+        'id': orderResponse['id'],
+        'serviceType': 'Shoes Repair - $title',
+        'serviceCategory': 'Perbaikan Sepatu',
+        'serviceName': title,
+        'date': formattedDate,
+        'price': 'Rp ${_formatCurrency(totalPrice)}',
+        'itemCount': quantity,
+        'paymentMethod': selectedPaymentMethod,
+        'paymentStatus': 'Belum Dibayar',
+        'serviceStatus': 'Dikonfirmasi',
+        'totalPrice': totalPrice,
+        'unitPrice': totalPrice ~/ quantity,
+        'notes': description,
+        'createdAt': now.toIso8601String(),
+      });
+
       // Mark as booked locally
       setState(() {
         bookedServices.add(id);
@@ -345,9 +367,10 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 6),
         action: SnackBarAction(
-          label: 'Lihat Riwayat',
+          label: '',
           textColor: Colors.white,
           onPressed: () {
+            if (!mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const HistoryScreen()),
