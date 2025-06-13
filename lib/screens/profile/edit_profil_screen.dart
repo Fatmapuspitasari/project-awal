@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:project_awal/screens/database/supabase_service.dart';
-import 'package:project_awal/screens/database/edit_profile_service.dart';
+import 'package:Ardefva/screens/database/supabase_service.dart';
+import 'package:Ardefva/screens/database/edit_profile_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditProfileScreen extends StatefulWidget {

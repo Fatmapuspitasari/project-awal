@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'register_screen.dart';
 import 'main_screen.dart';
-import 'package:project_awal/screens/database/supabase_service.dart';
+import 'package:Ardefva/screens/database/supabase_service.dart';
 
 class Login2Screen extends StatefulWidget {
   const Login2Screen({super.key});

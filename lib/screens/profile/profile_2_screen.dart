@@ -5,12 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:project_awal/screens/login/login_2_screen.dart';
+import 'package:Ardefva/screens/login/login_2_screen.dart';
 import 'bantuan_screen.dart';
 import 'tentangkami_screen.dart';
 import 'syarat_ketentuan_screen.dart';
-import 'package:project_awal/screens/database/supabase_service.dart';
-import 'package:project_awal/theme_control.dart';
+import 'package:Ardefva/screens/database/supabase_service.dart';
+import 'package:Ardefva/theme_control.dart';
 import 'edit_profil_screen.dart';
 
 class ProfileScreen extends StatefulWidget {

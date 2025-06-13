@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project_awal/screens/history_screen.dart';
-import 'package:project_awal/screens/database/supabase_service.dart';
+import 'package:Ardefva/screens/history_screen.dart';
+import 'package:Ardefva/screens/database/supabase_service.dart';
 
 class ShoesCareScreen extends StatefulWidget {
   const ShoesCareScreen({super.key});

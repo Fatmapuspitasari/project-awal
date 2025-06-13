@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:project_awal/screens/beranda/home_screen.dart';
-import 'package:project_awal/screens/history_screen.dart';
-import 'package:project_awal/screens/store_screen.dart';
-import 'package:project_awal/widget/custom_bottom_label.dart';
-import 'package:project_awal/widget/custom_bottom_nav_bar.dart';
-import 'package:project_awal/screens/profile/profile_2_screen.dart';
+import 'package:Ardefva/screens/beranda/home_screen.dart';
+import 'package:Ardefva/screens/history_screen.dart';
+import 'package:Ardefva/screens/store_screen.dart';
+import 'package:Ardefva/widget/custom_bottom_label.dart';
+import 'package:Ardefva/widget/custom_bottom_nav_bar.dart';
+import 'package:Ardefva/screens/profile/profile_2_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key, this.initialIndex = 0});

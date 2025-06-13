@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:project_awal/screens/login/login_2_screen.dart';
-import 'package:project_awal/screens/login/main_screen.dart';
+import 'package:Ardefva/screens/login/login_2_screen.dart';
+import 'package:Ardefva/screens/login/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

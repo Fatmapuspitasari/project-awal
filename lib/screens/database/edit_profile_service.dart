@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:project_awal/screens/database/supabase_service.dart';
+import 'package:Ardefva/screens/database/supabase_service.dart';
 
 class EditProfileService extends GetxService {
   final SupabaseService _supabaseService = Get.find<SupabaseService>();
