@@ -84,36 +84,49 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
     'Kartu Kredit/Debit',
   ];
 
+  // Function to format date with Indonesian month names (DATE ONLY)
+  String _formatDateIndonesian(DateTime date) {
+    final List<String> monthNames = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    
+    String day = date.day.toString().padLeft(2, '0');
+    String month = monthNames[date.month - 1];
+    String year = date.year.toString();
+    
+    return '$day $month $year';
+  }
+
   void _showImageDialog(BuildContext context, String imagePath, String title) {
     showDialog(
       context: context,
-      builder:
-          (_) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+              child: Image.asset(imagePath, fit: BoxFit.cover),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                  child: Image.asset(imagePath, fit: BoxFit.cover),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -132,142 +145,138 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
 
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            backgroundColor: const Color(0xFFE8EAF0),
-            title: const Text('Konfirmasi Pesanan'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Pesan "$title"'),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        backgroundColor: const Color(0xFFE8EAF0),
+        title: const Text('Konfirmasi Pesanan'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Pesan "$title"'),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Jumlah: $quantity',
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Total: Rp ${_formatCurrency(totalPrice)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Metode Pembayaran:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selectedPaymentMethod,
+                    isExpanded: true,
+                    items: paymentMethods.map((String method) {
+                      return DropdownMenuItem<String>(
+                        value: method,
+                        child: Text(
+                          method,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedPaymentMethod = newValue!;
+                      });
+                    },
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Jumlah: $quantity',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Total: Rp ${_formatCurrency(totalPrice)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Metode Pembayaran:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedPaymentMethod,
-                        isExpanded: true,
-                        items:
-                            paymentMethods.map((String method) {
-                              return DropdownMenuItem<String>(
-                                value: method,
-                                child: Text(
-                                  method,
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              );
-                            }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedPaymentMethod = newValue!;
-                          });
-                        },
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '🔧 Info Pembayaran & Servis:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.blue.shade200),
+                    SizedBox(height: 4),
+                    Text(
+                      '• Pembayaran 50% di muka, 50% setelah selesai',
+                      style: TextStyle(fontSize: 11),
                     ),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '🔧 Info Pembayaran & Servis:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          '• Pembayaran 50% di muka, 50% setelah selesai',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                        Text(
-                          '• Estimasi pengerjaan: 3-7 hari kerja',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                        Text(
-                          '• Garansi layanan: 30 hari',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                        Text(
-                          '• Konsultasi gratis sebelum pengerjaan',
-                          style: TextStyle(fontSize: 11),
-                        ),
-                      ],
+                    Text(
+                      '• Estimasi pengerjaan: 3-7 hari kerja',
+                      style: TextStyle(fontSize: 11),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Batal'),
-              ),
-              TextButton(
-                onPressed:
-                    isLoading
-                        ? null
-                        : () => _processBooking(
-                          id,
-                          title,
-                          description,
-                          totalPrice,
-                          quantity,
-                        ),
-                child:
-                    isLoading
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Text('Konfirmasi'),
+                    Text(
+                      '• Garansi layanan: 30 hari',
+                      style: TextStyle(fontSize: 11),
+                    ),
+                    Text(
+                      '• Konsultasi gratis sebelum pengerjaan',
+                      style: TextStyle(fontSize: 11),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: isLoading
+                ? null
+                : () => _processBooking(
+                      id,
+                      title,
+                      description,
+                      totalPrice,
+                      quantity,
+                    ),
+            child: isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Konfirmasi'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -297,26 +306,27 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
         serviceStatus: 'Dikonfirmasi',
       );
 
-      // **TAMBAHAN PENTING: Simpan ke History Screen**
+      // **PERBAIKAN: Format tanggal dengan nama bulan Indonesia (TANPA WAKTU)**
       final DateTime now = DateTime.now();
-      final String formattedDate = '${now.day}/${now.month}/${now.year}';
+      final String formattedDate = _formatDateIndonesian(now);
 
-      // Tambahkan ke history screen
+      // Tambahkan ke history screen dengan data yang lebih lengkap
       HistoryScreen.addOrder({
-        'id': orderResponse['id'],
+        'id': orderResponse['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
         'serviceType': 'Shoes Repair - $title',
         'serviceCategory': 'Perbaikan Sepatu',
         'serviceName': title,
-        'date': formattedDate,
-        'price': 'Rp ${_formatCurrency(totalPrice)}',
-        'itemCount': quantity,
+        'date': formattedDate, // Tanggal dengan format nama bulan Indonesia (TANPA WAKTU)
+        'price': 'Rp ${_formatCurrency(totalPrice)}', // Harga dengan format mata uang
+        'itemCount': quantity, // Jumlah item
         'paymentMethod': selectedPaymentMethod,
         'paymentStatus': 'Belum Dibayar',
         'serviceStatus': 'Dikonfirmasi',
         'totalPrice': totalPrice,
         'unitPrice': totalPrice ~/ quantity,
-        'notes': description,
+        'notes': description.isEmpty ? 'Layanan perbaikan sepatu' : description,
         'createdAt': now.toIso8601String(),
+        'orderDate': now, // Tambahan untuk sorting
       });
 
       // Mark as booked locally
@@ -329,19 +339,54 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
       Navigator.of(context).pop();
 
       // Show success message
-      _showSuccessSnackBar(title, quantity, orderResponse['id']);
+      _showSuccessSnackBar(title, quantity, orderResponse['id'] ?? 'Unknown');
     } catch (e) {
       setState(() {
         isLoading = false;
       });
 
-      // Show error message
+      // Fallback: Jika database gagal, tetap simpan ke history local
+      final DateTime now = DateTime.now();
+      final String formattedDate = _formatDateIndonesian(now);
+      final String fallbackId = DateTime.now().millisecondsSinceEpoch.toString();
+
+      HistoryScreen.addOrder({
+        'id': fallbackId,
+        'serviceType': 'Shoes Repair - $title',
+        'serviceCategory': 'Perbaikan Sepatu',
+        'serviceName': title,
+        'date': formattedDate, // Format dengan nama bulan Indonesia (TANPA WAKTU)
+        'price': 'Rp ${_formatCurrency(totalPrice)}',
+        'itemCount': quantity,
+        'paymentMethod': selectedPaymentMethod,
+        'paymentStatus': 'Belum Dibayar',
+        'serviceStatus': 'Dikonfirmasi',
+        'totalPrice': totalPrice,
+        'unitPrice': totalPrice ~/ quantity,
+        'notes': description.isEmpty ? 'Layanan perbaikan sepatu' : description,
+        'createdAt': now.toIso8601String(),
+        'orderDate': now,
+      });
+
+      // Mark as booked locally
+      setState(() {
+        bookedServices.add(id);
+        isLoading = false;
+      });
+
+      // Close dialog
+      Navigator.of(context).pop();
+
+      // Show success message despite database error
+      _showSuccessSnackBar(title, quantity, fallbackId);
+
+      // Show error message about database
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Gagal menyimpan pesanan: ${_supabaseService.getErrorMessage(e)}',
+            'Pesanan tersimpan secara lokal. Error database: ${_supabaseService.getErrorMessage(e)}',
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.orange,
           duration: const Duration(seconds: 5),
         ),
       );
@@ -367,7 +412,7 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 6),
         action: SnackBarAction(
-          label: '',
+          label: 'Lihat Riwayat',
           textColor: Colors.white,
           onPressed: () {
             if (!mounted) return;
@@ -384,30 +429,29 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
   void _showLoginRequiredDialog() {
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text('Login Diperlukan'),
-            content: const Text(
-              'Anda harus login terlebih dahulu untuk melakukan pemesanan.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Tutup'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  // Navigate to login screen
-                  // Get.toNamed('/login'); // Uncomment if using GetX routing
-                },
-                child: const Text('Login'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text('Login Diperlukan'),
+        content: const Text(
+          'Anda harus login terlebih dahulu untuk melakukan pemesanan.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Tutup'),
           ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate to login screen
+              // Get.toNamed('/login'); // Uncomment if using GetX routing
+            },
+            child: const Text('Login'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -435,12 +479,11 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
           children: [
             // Image section
             GestureDetector(
-              onTap:
-                  () => _showImageDialog(
-                    context,
-                    service['imagePath'],
-                    service['title'],
-                  ),
+              onTap: () => _showImageDialog(
+                context,
+                service['imagePath'],
+                service['title'],
+              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
@@ -527,8 +570,7 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap:
-                          () => setState(() => quantities[id] = quantity + 1),
+                      onTap: () => setState(() => quantities[id] = quantity + 1),
                       child: Container(
                         width: 32,
                         height: 32,
@@ -557,10 +599,9 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed:
-                    (isBooked || isLoading)
-                        ? null
-                        : () => _confirmBooking(
+                onPressed: (isBooked || isLoading)
+                    ? null
+                    : () => _confirmBooking(
                           id,
                           service['title'],
                           service['description'],
@@ -650,8 +691,7 @@ class _ShoesRepairScreenState extends State<ShoesRepairScreen> {
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: repairServices.length,
-        itemBuilder:
-            (context, index) => _buildServiceCard(repairServices[index]),
+        itemBuilder: (context, index) => _buildServiceCard(repairServices[index]),
       ),
     );
   }

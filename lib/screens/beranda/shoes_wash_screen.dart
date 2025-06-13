@@ -285,8 +285,25 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                               bookedServices.add(id);
                             });
 
-                            // Add order to history (existing functionality)
-                            HistoryScreen.addOrder(orderData);
+                            // Format data untuk history screen yang sesuai dengan format yang diharapkan
+                            final historyOrderData = {
+                              'serviceType': 'Shoes Wash - $category',
+                              'date': _getCurrentDate(),
+                              'price': 'Rp ${totalPrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                              'itemCount': '$quantity item',
+                              'paymentStatus': 'Belum Dibayar',
+                              'title': '$category - $type',
+                              'quantity': quantity,
+                              'unitPrice': unitPrice,
+                              'totalPrice': totalPrice,
+                              'paymentMethod': selectedPaymentMethod,
+                              'orderDate': _getCurrentDate(),
+                              'serviceStatus': 'Dikonfirmasi',
+                              'paymentInfo': _getPaymentInfo(selectedPaymentMethod),
+                            };
+
+                            // Add order to history dengan format yang sesuai
+                            HistoryScreen.addOrder(historyOrderData);
 
                             Navigator.of(context).pop();
 
@@ -298,7 +315,7 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
                                 duration: const Duration(seconds: 4),
                                 backgroundColor: Colors.green,
                                 action: SnackBarAction(
-                                  label: '',
+                                  label: 'Lihat Riwayat',
                                   textColor: Colors.white,
                                   onPressed: () {
                                     if (!mounted) return;
@@ -348,18 +365,18 @@ class _ShoesWashScreenState extends State<ShoesWashScreen> {
   String _getCurrentDate() {
     final now = DateTime.now();
     final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
       'Mei',
-      'Jun',
-      'Jul',
-      'Ags',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     return '${now.day} ${months[now.month - 1]} ${now.year}';
   }

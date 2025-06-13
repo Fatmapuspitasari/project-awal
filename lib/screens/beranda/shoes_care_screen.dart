@@ -251,7 +251,7 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                             // Calculate unit price
                             final unitPrice = price;
 
-                            // Prepare order data
+                            // Prepare order data for database
                             final orderData = {
                               'title': title,
                               'serviceType': 'Shoes Care',
@@ -275,8 +275,20 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                               confirmedItems.add(title);
                             });
 
-                            // Add order to history (existing functionality)
-                            HistoryScreen.addOrder(orderData);
+                            // Prepare order data for history screen with correct format
+                            final historyOrderData = {
+                              'serviceType': 'Shoes Care - $title',
+                              'date': _getCurrentDate(),
+                              'price': 'Rp ${total.toString()}',
+                              'itemCount': quantity.toString(),
+                              'paymentStatus': 'Belum Dibayar',
+                              'paymentMethod': selectedPaymentMethod,
+                              'orderDate': _getCurrentDate(),
+                              'serviceStatus': 'Dikonfirmasi',
+                            };
+
+                            // Add order to history
+                            HistoryScreen.addOrder(historyOrderData);
 
                             Navigator.of(context).pop();
 
@@ -288,7 +300,7 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
                                 duration: const Duration(seconds: 4),
                                 backgroundColor: Colors.green,
                                 action: SnackBarAction(
-                                  label: '',
+                                  label: 'Lihat Riwayat',
                                   textColor: Colors.white,
                                   onPressed: () {
                                     if (!mounted) return;
@@ -338,18 +350,18 @@ class _ShoesCareScreenState extends State<ShoesCareScreen> {
   String _getCurrentDate() {
     final now = DateTime.now();
     final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
       'Mei',
-      'Jun',
-      'Jul',
-      'Ags',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     return '${now.day} ${months[now.month - 1]} ${now.year}';
   }
