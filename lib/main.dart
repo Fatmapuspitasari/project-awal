@@ -9,6 +9,7 @@ import 'screens/database/supabase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+try{
   await GetStorage.init();
 
   await Supabase.initialize(
@@ -19,8 +20,26 @@ void main() async {
 
   await SupabaseService.init();
 
+Get.put(ThemeController());
+
   runApp(const MyApp());
+} catch (e, stackTrace) {
+  print('❌ Error saat init: $e');
+  print(stackTrace);
+
+      runApp(const MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text(
+            'Terjadi kesalahan saat memulai aplikasi.\nSilakan coba lagi nanti.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    ));
+  }
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
